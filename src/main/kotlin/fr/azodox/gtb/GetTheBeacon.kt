@@ -11,8 +11,10 @@ import fr.azodox.gtb.listener.PlayerQuitListener
 import fr.azodox.gtb.listener.game.player.GamePlayerRemovedListener
 import fr.azodox.gtb.listener.inventory.PlayerInteractionListener
 import fr.azodox.gtb.util.LocationSerialization
+import me.devnatan.inventoryframework.ViewFrame
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
@@ -27,6 +29,7 @@ class GetTheBeacon : JavaPlugin() {
 
     val languageCore = LanguageCore(this)
     lateinit var game: Game
+    lateinit var viewFrame: ViewFrame
 
     override fun onEnable() {
         saveDefaultConfig()
@@ -37,7 +40,8 @@ class GetTheBeacon : JavaPlugin() {
         )
 
         languageCore.init()
-        game = Game()
+        game = Game(this)
+        viewFrame = ViewFrame.create(this)
 
         loadTeams()
 
@@ -85,6 +89,7 @@ class GetTheBeacon : JavaPlugin() {
                     MiniMessage.miniMessage().deserialize(teams.getString("$key.displayName")!!),
                     TextColor.color(teams.getString("$key.color")!!.toInt(16)),
                     teams.getInt("$key.size"),
+                    Material.getMaterial(teams.getString("$key.icon")!!) ?: Material.WHITE_BANNER,
                     LocationSerialization.deserialize(teams.getString("$key.spawn")!!),
                 )
             )

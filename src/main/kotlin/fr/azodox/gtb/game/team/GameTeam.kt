@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.scoreboard.Team
 import java.util.*
 
@@ -16,6 +17,7 @@ data class GameTeam(
     val displayName: Component,
     val color: TextColor,
     val size: Int,
+    val icon: Material,
     private val spawn: Location,
     private val players: MutableList<UUID> = mutableListOf()
 ) {
@@ -33,6 +35,8 @@ data class GameTeam(
         bukkitTeam.removeEntry(player.toString())
         Bukkit.getPluginManager().callEvent(GamePlayerLeavesTeamEvent(game, Bukkit.getPlayer(player)!!, this))
     }
+
+    fun contains(player: UUID) = players.contains(player)
 
     fun spawnPlayers() {
         players.forEach { uuid ->

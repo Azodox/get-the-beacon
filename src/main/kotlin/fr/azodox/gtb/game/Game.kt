@@ -5,6 +5,7 @@ import fr.azodox.gtb.event.game.player.GamePlayerInitializationEvent
 import fr.azodox.gtb.event.game.GameStateChangeEvent
 import fr.azodox.gtb.event.game.player.GamePlayerRemovedEvent
 import fr.azodox.gtb.game.team.GameTeam
+import fr.azodox.gtb.game.team.view.GameTeamChoiceView
 import fr.azodox.gtb.lang.LanguageCore
 import fr.azodox.gtb.lang.language
 import me.devnatan.inventoryframework.ViewFrame
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player
 import java.util.*
 
 data class Game(
+    val plugin: GetTheBeacon,
     val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
     val name: String = "GetTheBeacon $id",
     private val waitingPlayers: MutableList<UUID> = mutableListOf(),
@@ -72,5 +74,11 @@ data class Game(
 
     fun getTeams(): List<GameTeam> {
         return teams.toList()
+    }
+
+    fun openTeamChoiceView(player: Player) {
+        val viewFrame = ViewFrame.create(plugin)
+        viewFrame.with(GameTeamChoiceView(this.teams)).register()
+        viewFrame.open(GameTeamChoiceView::class.java, player)
     }
 }
