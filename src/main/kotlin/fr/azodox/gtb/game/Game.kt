@@ -1,8 +1,9 @@
 package fr.azodox.gtb.game
 
 import fr.azodox.gtb.GetTheBeacon
-import fr.azodox.gtb.event.GamePlayerInitializationEvent
+import fr.azodox.gtb.event.game.player.GamePlayerInitializationEvent
 import fr.azodox.gtb.event.game.GameStateChangeEvent
+import fr.azodox.gtb.event.game.player.GamePlayerRemovedEvent
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
 import fr.azodox.gtb.lang.language
@@ -62,6 +63,7 @@ data class Game(
 
     fun removePlayer(player: UUID) {
         waitingPlayers.remove(player)
+        Bukkit.getPluginManager().callEvent(GamePlayerRemovedEvent(this, Bukkit.getOfflinePlayer(player)))
     }
 
     fun getWaitingPlayers(): List<Player> {
