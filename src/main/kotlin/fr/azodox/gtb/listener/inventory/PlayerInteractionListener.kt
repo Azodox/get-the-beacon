@@ -21,12 +21,13 @@ class PlayerInteractionListener(private val game: Game) : Listener {
             when (item.type) {
                 Material.WHITE_BANNER -> {
                     if (game.state == GameState.WAITING) {
-
+                        game.openTeamChoiceView(player)
                     }
                 }
 
                 else -> {}
             }
+            event.isCancelled = true
         }
     }
 }

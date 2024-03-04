@@ -9,9 +9,11 @@ teams:
     color: 0xFF0000
     size: 4
     spawn: "world:0:0:0:0:0"
+    icon: "minecraft:red_wool"
   blue:
     name: Blue
     displayName: '<blue>Blue</blue>'
     color: 0x0000FF
     size: 4
     spawn: "world:0:0:0:0:0"
+    icon: "minecraft:blue_wool"
