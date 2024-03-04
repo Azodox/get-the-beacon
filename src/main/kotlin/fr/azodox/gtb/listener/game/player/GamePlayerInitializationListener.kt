@@ -1,6 +1,6 @@
-package fr.azodox.gtb.listener
+package fr.azodox.gtb.listener.game.player
 
-import fr.azodox.gtb.event.GamePlayerInitializationEvent
+import fr.azodox.gtb.event.game.player.GamePlayerInitializationEvent
 import fr.azodox.gtb.lang.language
 import fr.azodox.gtb.util.ItemBuilder
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
