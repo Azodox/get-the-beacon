@@ -43,6 +43,7 @@ class GetTheBeacon : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
         server.pluginManager.registerEvents(PlayerQuitListener(this), this)
         server.pluginManager.registerEvents(GamePlayerInitializationListener(), this)
+        server.pluginManager.registerEvents(GamePlayerRemovedListener(), this)
         server.pluginManager.registerEvents(PlayerInteractionListener(game), this)
 
         val manager = PaperCommandManager(this)
