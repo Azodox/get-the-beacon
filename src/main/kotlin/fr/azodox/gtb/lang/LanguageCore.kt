@@ -53,13 +53,12 @@ class LanguageCore(private val plugin: JavaPlugin) {
 
     fun setLocale(player: UUID, locale: String) {
         val gson = GsonBuilder().setPrettyPrinting().create()
-        var userData = mutableMapOf<UUID, String>()
+        var userData = mutableMapOf<String, String>()
 
         if (userDataFile.length() != 0L) {
-            userData = gson.fromJson(userDataFile.readText(), MutableMap::class.java) as MutableMap<UUID, String>
+            userData = gson.fromJson(userDataFile.readText(), MutableMap::class.java) as MutableMap<String, String>
         }
-
-        userData[player] = locale
+        userData[player.toString()] = locale
         userDataFile.writeText(gson.toJson(userData))
     }
 
