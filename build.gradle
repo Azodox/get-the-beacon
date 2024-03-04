@@ -1,0 +1,51 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
+}
+
+group = 'fr.azodox'
+version = '0.1.1'
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
+}
+
+shadowJar {
+    archiveClassifier.set('')
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+    duplicatesStrategy = 'include'
+}

@@ -1,0 +1,5 @@
+name: GetTheBeacon
+version: @version@
+api-version: 1.19
+author: Azodox_
+main: fr.azodox.gtb.GetTheBeacon

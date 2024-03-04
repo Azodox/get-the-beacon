@@ -1,0 +1,7 @@
+{
+  "name": "Français (France)",
+  "locale": "fr-fr",
+  "messages":{
+    "start.notenoughplayers": "Il n'y a pas assez de joueurs pour commencer la partie."
+  }
+}

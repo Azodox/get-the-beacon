@@ -1,0 +1,17 @@
+# This file is used to configure the teams for the game.
+# The display name supports MiniMessages (https://docs.adventure.kyori.net/minimessage.html)
+# The color is in the format 0xHEX (https://www.rapidtables.com/web/color/RGB_Color.html)
+# The spawn location is in the format "world:x:y:z:yaw:pitch"
+teams:
+  red:
+    name: Red
+    displayName: '<red>Red</red>'
+    color: 0xFF0000
+    size: 4
+    spawn: "world:0:0:0:0:0"
+  blue:
+    name: Blue
+    displayName: '<blue>Blue</blue>'
+    color: 0x0000FF
+    size: 4
+    spawn: "world:0:0:0:0:0"
