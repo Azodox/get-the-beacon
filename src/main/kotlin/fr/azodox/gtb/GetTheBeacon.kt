@@ -5,9 +5,10 @@ import fr.azodox.gtb.commands.LanguageCommand
 import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
-import fr.azodox.gtb.listener.GamePlayerInitializationListener
+import fr.azodox.gtb.listener.game.player.GamePlayerInitializationListener
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
+import fr.azodox.gtb.listener.game.player.GamePlayerRemovedListener
 import fr.azodox.gtb.listener.inventory.PlayerInteractionListener
 import fr.azodox.gtb.util.LocationSerialization
 import net.kyori.adventure.text.format.TextColor
