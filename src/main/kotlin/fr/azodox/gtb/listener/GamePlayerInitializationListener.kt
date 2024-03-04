@@ -22,7 +22,7 @@ class GamePlayerInitializationListener : Listener {
                     .deserialize(
                         LanguageCore.languages["fr-fr"]!!
                             .getMessage("lobby.player.join")
-                            .format(PlainTextComponentSerializer.plainText().serialize(it.displayName()))
+                            .format(PlainTextComponentSerializer.plainText().serialize(player.displayName()))
                     )
             )
         }
