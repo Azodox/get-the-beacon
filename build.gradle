@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
 }
@@ -16,16 +16,25 @@ repositories {
     maven {
         url 'https://papermc.io/repo/repository/maven-public/'
     }
-    maven { url 'https://jitpack.io' }
+    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
 }
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
+    implementation 'me.devnatan:inventory-framework-platform-bukkit:3.1.0-rc'
+    implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
 }
 
 shadowJar {
+    relocate 'me.devnatan.inventoryframework', 'fr.azodox.lib.inventoryframework'
+    relocate 'co.aikar.commands', 'fr.azodox.lib.acf'
+    relocate 'co.aikar.locales', 'fr.azodox.lib.acf.locales'
     archiveClassifier.set('')
+}
+
+compileKotlin {
+    kotlinOptions.javaParameters = true
 }
 
 java {

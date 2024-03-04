@@ -2,6 +2,7 @@ package fr.azodox.gtb.listener
 
 import fr.azodox.gtb.GetTheBeacon
 import fr.azodox.gtb.game.GameState
+import fr.azodox.gtb.lang.LanguageCore
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -14,6 +15,7 @@ class PlayerJoinListener(private val gtb: GetTheBeacon) : Listener {
         val player = event.player
         val game = gtb.game
 
+        gtb.languageCore.setLocale(player.uniqueId, LanguageCore.DEFAULT_LANGUAGE.locale)
         when (game.state) {
             GameState.WAITING -> {
                 game.initPlayer(player.uniqueId)

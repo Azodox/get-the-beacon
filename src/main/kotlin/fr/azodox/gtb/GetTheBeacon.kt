@@ -1,5 +1,7 @@
 package fr.azodox.gtb
 
+import co.aikar.commands.PaperCommandManager
+import fr.azodox.gtb.commands.LanguageCommand
 import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
@@ -22,7 +24,7 @@ class GetTheBeacon : JavaPlugin() {
         val LOGGER: Logger = Logger.getLogger("GetTheBeacon")
     }
 
-    private val languageCore = LanguageCore()
+    val languageCore = LanguageCore(this)
     lateinit var game: Game
 
     override fun onEnable() {
@@ -42,6 +44,13 @@ class GetTheBeacon : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerQuitListener(this), this)
         server.pluginManager.registerEvents(GamePlayerInitializationListener(), this)
         server.pluginManager.registerEvents(PlayerInteractionListener(game), this)
+
+        val manager = PaperCommandManager(this)
+        manager.commandCompletions.registerAsyncCompletion("locales") {
+            LanguageCore.languages.map { it.key }
+        }
+        manager.registerCommand(LanguageCommand(languageCore))
+
         LOGGER.info("Enabled!")
     }
 
