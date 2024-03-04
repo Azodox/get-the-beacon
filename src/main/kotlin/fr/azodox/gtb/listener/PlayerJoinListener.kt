@@ -15,7 +15,7 @@ class PlayerJoinListener(private val gtb: GetTheBeacon) : Listener {
         val player = event.player
         val game = gtb.game
 
-        gtb.languageCore.setLocale(player.uniqueId, LanguageCore.DEFAULT_LANGUAGE.locale)
+        gtb.languageCore.initPlayer(player)
         when (game.state) {
             GameState.WAITING -> {
                 game.initPlayer(player.uniqueId)

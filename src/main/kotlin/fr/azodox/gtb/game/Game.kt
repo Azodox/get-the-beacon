@@ -28,7 +28,7 @@ data class Game(
         }
 
     fun start(sender: CommandSender){
-        val language = if (sender is Player) language(sender as Player) else LanguageCore.DEFAULT_LANGUAGE
+        val language = if (sender is Player) language(sender) else LanguageCore.DEFAULT_LANGUAGE
 
         if(teams.isEmpty())
             throw IllegalStateException("No team registered")

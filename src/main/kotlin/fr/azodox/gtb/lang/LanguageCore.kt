@@ -4,8 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.azodox.gtb.GetTheBeacon
 import fr.azodox.gtb.lang.LanguageCore.Companion.DEFAULT_LANGUAGE
-import fr.azodox.gtb.lang.LanguageCore.Companion.languages
-import fr.azodox.gtb.lang.LanguageCore.Companion.userDataFile
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -65,6 +63,18 @@ class LanguageCore(private val plugin: JavaPlugin) {
         userDataFile.writeText(gson.toJson(userData))
     }
 
+    fun initPlayer(player: Player) = initPlayer(player.uniqueId)
+    fun initPlayer(player: UUID) {
+        val gson = Gson()
+
+        if (userDataFile.length() != 0L) {
+            val userData = gson.fromJson(userDataFile.readText(), MutableMap::class.java)
+            if (userData.containsKey(player))
+                return
+        }
+        setLocale(player, DEFAULT_LANGUAGE.locale)
+    }
+
     private fun createDataFile(){
         val dataFolder = plugin.dataFolder
         val userDataFolder = File(dataFolder, "locales")
@@ -77,9 +87,9 @@ class LanguageCore(private val plugin: JavaPlugin) {
     }
 }
 
-inline fun language(player: Player): Language = language(player.uniqueId)
+fun language(player: Player): Language = language(player.uniqueId)
 
-inline fun language(player: UUID): Language {
+fun language(player: UUID): Language {
     val gson = Gson()
     val userData = gson.fromJson(LanguageCore.userDataFile.readText(), MutableMap::class.java)
     return LanguageCore.languages[userData[player]] ?: DEFAULT_LANGUAGE
