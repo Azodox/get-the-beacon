@@ -1,0 +1,11 @@
+version: '3'
+services:
+  gtb-dev:
+    build:
+      context: .
+    ports:
+      - "20000:25565"
+      - "5005:5005"
+    container_name: 'gtb-dev'
+    stdin_open: true
+    tty: true

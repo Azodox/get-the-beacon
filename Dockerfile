@@ -1,5 +1,6 @@
 FROM marctv/minecraft-papermc-server:latest
 
+COPY ./worlds/gtb ./world
 COPY ./build/libs ./plugins
 ENV MEMORYSIZE=2G
 ENV TZ=Europe/Paris

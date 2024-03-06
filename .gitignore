@@ -2,6 +2,7 @@
 .idea
 build
 bin
+worlds
 
 # Compiled class file
 *.class
@@ -27,3 +28,36 @@ bin
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+/worlds/gtb/advancements/b9964368-cc95-4425-82c3-919184e81afb.json
+/worlds/gtb/data/capabilities.dat
+/worlds/gtb/data/raids.dat
+/worlds/gtb/DIM1/data/capabilities.dat
+/worlds/gtb/DIM1/data/raids_end.dat
+/worlds/gtb/DIM-1/data/capabilities.dat
+/worlds/gtb/DIM-1/data/raids.dat
+/worlds/gtb/entities/r.0.0.mca
+/worlds/gtb/entities/r.0.-1.mca
+/worlds/gtb/entities/r.-1.0.mca
+/worlds/gtb/entities/r.-1.-1.mca
+/worlds/gtb/playerdata/b9964368-cc95-4425-82c3-919184e81afb.dat
+/worlds/gtb/playerdata/b9964368-cc95-4425-82c3-919184e81afb.dat_old
+/worlds/gtb/poi/r.0.0.mca
+/worlds/gtb/poi/r.0.-1.mca
+/worlds/gtb/poi/r.1.0.mca
+/worlds/gtb/poi/r.1.-1.mca
+/worlds/gtb/poi/r.-1.0.mca
+/worlds/gtb/poi/r.-1.-1.mca
+/worlds/gtb/region/r.0.0.mca
+/worlds/gtb/region/r.0.-1.mca
+/worlds/gtb/region/r.1.0.mca
+/worlds/gtb/region/r.1.-1.mca
+/worlds/gtb/region/r.-1.0.mca
+/worlds/gtb/region/r.-1.-1.mca
+/worlds/gtb/region/r.-2.0.mca
+/worlds/gtb/region/r.-2.-1.mca
+/worlds/gtb/serverconfig/forge-server.toml
+/worlds/gtb/stats/b9964368-cc95-4425-82c3-919184e81afb.json
+/worlds/gtb/icon.png
+/worlds/gtb/level.dat
+/worlds/gtb/level.dat_old
+/worlds/gtb/session.lock

@@ -75,7 +75,7 @@ class GetTheBeacon : JavaPlugin() {
         }
         manager.registerCommand(LanguageCommand(languageCore))
 
-        LOGGER.info("Enabled!")
+        LOGGER.info("Enabled")
     }
 
     private fun loadTeams() {
@@ -97,7 +97,7 @@ class GetTheBeacon : JavaPlugin() {
             )
         }
 
-        LOGGER.info("Loaded ${game.getTeams().size} teams!")
+        LOGGER.info("Loaded ${game.getTeams().size} teams")
     }
 
     private fun addEvents(vararg listeners: Listener) {
