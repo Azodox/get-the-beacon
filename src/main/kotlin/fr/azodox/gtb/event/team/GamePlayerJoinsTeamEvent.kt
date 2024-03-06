@@ -5,5 +5,5 @@ import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.team.GameTeam
 import org.bukkit.entity.Player
 
-class GamePlayerJoinsTeamEvent(game: Game, player: Player, team: GameTeam) : GameEvent(game) {
+open class GamePlayerJoinsTeamEvent(game: Game, open val player: Player, open val team: GameTeam) : GameEvent(game) {
 }

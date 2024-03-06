@@ -1,2 +1,7 @@
 locales:
   default: fr-fr
+spawn: "world:0:77:0:0:0"
+game:
+  starting-time: 10
+  min-players: 2
+  max-players: 10

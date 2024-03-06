@@ -58,7 +58,7 @@ class GameTeamChoiceView(private val teams: List<GameTeam>) : View() {
                             }
                     )
                 } else {
-                    team.leave(player.uniqueId)
+                    team.leave(player)
 
                     player.sendMessage(
                         language(player)

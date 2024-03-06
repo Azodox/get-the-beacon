@@ -5,17 +5,25 @@ import fr.azodox.gtb.commands.LanguageCommand
 import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
-import fr.azodox.gtb.listener.game.player.GamePlayerInitializationListener
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
-import fr.azodox.gtb.listener.game.player.GamePlayerRemovedListener
+import fr.azodox.gtb.listener.game.player.*
+import fr.azodox.gtb.listener.game.player.environment.GamePlayerBreakBlockListener
+import fr.azodox.gtb.listener.game.player.environment.GamePlayerDropsItemListener
+import fr.azodox.gtb.listener.game.player.environment.GamePlayerPickupItemListener
+import fr.azodox.gtb.listener.game.player.environment.GamePlayerPlaceBlockListener
+import fr.azodox.gtb.listener.game.player.state.GamePlayerFoodLevelChangeListener
+import fr.azodox.gtb.listener.game.player.state.GamePlayerTakesDamageListener
 import fr.azodox.gtb.listener.inventory.PlayerInteractionListener
+import fr.azodox.gtb.listener.state.GameStartsListener
+import fr.azodox.gtb.listener.state.GameStateChangeListener
 import fr.azodox.gtb.util.LocationSerialization
 import me.devnatan.inventoryframework.ViewFrame
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.util.logging.Logger
@@ -40,16 +48,29 @@ class GetTheBeacon : JavaPlugin() {
         )
 
         languageCore.init()
-        game = Game(this)
+        game = Game(this, minPlayers = config.getInt("game.min-players"))
         viewFrame = ViewFrame.create(this)
 
         loadTeams()
 
-        server.pluginManager.registerEvents(PlayerJoinListener(this), this)
-        server.pluginManager.registerEvents(PlayerQuitListener(this), this)
-        server.pluginManager.registerEvents(GamePlayerInitializationListener(), this)
-        server.pluginManager.registerEvents(GamePlayerRemovedListener(), this)
-        server.pluginManager.registerEvents(PlayerInteractionListener(game), this)
+        addEvents(
+            GamePlayerBreakBlockListener(game),
+            GamePlayerDropsItemListener(game),
+            GamePlayerInitializationListener(this),
+            GamePlayerJoinsTeamListener(game),
+            GamePlayerLeavesTeamListener(),
+            GamePlayerPlaceBlockListener(game),
+            GamePlayerRemovedListener(),
+            GamePlayerTakesDamageListener(game),
+            GamePlayerFoodLevelChangeListener(game),
+            GamePlayerGenericLobbyEventListener(),
+            GamePlayerPickupItemListener(game),
+            GameStateChangeListener(),
+            GameStartsListener(),
+            PlayerJoinListener(this),
+            PlayerQuitListener(this),
+            PlayerInteractionListener(game, this)
+        )
 
         val manager = PaperCommandManager(this)
         manager.commandCompletions.registerAsyncCompletion("locales") {
@@ -96,5 +117,9 @@ class GetTheBeacon : JavaPlugin() {
         }
 
         LOGGER.info("Loaded ${game.getTeams().size} teams!")
+    }
+
+    private fun addEvents(vararg listeners: Listener) {
+        listeners.forEach { this.server.pluginManager.registerEvents(it, this) }
     }
 }
