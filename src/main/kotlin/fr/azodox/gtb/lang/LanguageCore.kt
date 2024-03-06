@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import fr.azodox.gtb.GetTheBeacon
 import fr.azodox.gtb.lang.LanguageCore.Companion.DEFAULT_LANGUAGE
 import fr.azodox.gtb.util.FileUtil
+import fr.azodox.gtb.util.ItemBuilder.fromJson
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -45,24 +46,25 @@ class LanguageCore(private val plugin: JavaPlugin) {
         DEFAULT_LANGUAGE = languages[plugin.config.getString("locales.default")] ?: Language("Default", "en-us", mapOf())
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     fun setLocale(player: UUID, locale: String) {
         val gson = GsonBuilder().setPrettyPrinting().create()
         var userData = mutableMapOf<String, String>()
 
         if (userDataFile.length() != 0L) {
-            userData = gson.fromJson(userDataFile.readText(), MutableMap::class.java) as MutableMap<String, String>
+            userData = Json.decodeFromStream<MutableMap<String, String>>(userDataFile.inputStream())
         }
         userData[player.toString()] = locale
         userDataFile.writeText(gson.toJson(userData))
     }
 
     fun initPlayer(player: Player) = initPlayer(player.uniqueId)
-    fun initPlayer(player: UUID) {
-        val gson = Gson()
 
+    @OptIn(ExperimentalSerializationApi::class)
+    fun initPlayer(player: UUID) {
         if (userDataFile.length() != 0L) {
-            val userData = gson.fromJson(userDataFile.readText(), MutableMap::class.java)
-            if (userData.containsKey(player))
+            val userData = Json.decodeFromStream<MutableMap<String, String>>(userDataFile.inputStream())
+            if (userData.containsKey(player.toString()))
                 return
         }
         setLocale(player, DEFAULT_LANGUAGE.locale)
