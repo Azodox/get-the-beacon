@@ -15,7 +15,6 @@ class GameStateChangeListener : Listener {
             GameState.IN_GAME -> {
                 Bukkit.getPluginManager().callEvent(GameStartsEvent(event.game))
             }
-
             else -> {}
         }
     }

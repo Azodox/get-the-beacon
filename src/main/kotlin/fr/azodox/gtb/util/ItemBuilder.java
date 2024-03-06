@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -14,6 +15,8 @@ import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +29,7 @@ import java.util.Map;
  *
  * @version 1.8.3
  * @author Acquized
- * @contributor Kev575, Azodox_
+ * @contributor Kev575, Azodox_, Virtuaal
  */
 public class ItemBuilder {
 
@@ -153,6 +156,23 @@ public class ItemBuilder {
         if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSize))
             amount = 1;
         this.amount = amount;
+        return this;
+    }
+
+    /**
+     * Adds an information in the persistent data container of the item
+     *
+     * @param key the key of the information
+     * @param value the value of the information
+     * @param javaPlugin the plugin that will be used as the nameSpace of the additional information
+     * @param type the type of the additional information
+     * @return the ItemBuilder
+     */
+    public <T> ItemBuilder persistentInfo(String key, T value, Plugin javaPlugin, PersistentDataType<T, T> type) {
+        ItemMeta itemMeta = this.item.getItemMeta();
+        NamespacedKey nsk = new NamespacedKey(javaPlugin, key);
+        itemMeta.getPersistentDataContainer().set(nsk, type, value);
+        this.meta(itemMeta);
         return this;
     }
 
@@ -533,9 +553,9 @@ public class ItemBuilder {
         item.setType(material);
         item.setAmount(amount);
         ((Damageable) item.getItemMeta()).setDamage(damage);
-        meta = item.getItemMeta();
+
         if (data != null) {
-            ((BlockDataMeta) item.getItemMeta()).setBlockData(data);
+            ((BlockDataMeta) meta).setBlockData(data);
         }
         if (displayname != null) {
             meta.displayName(displayname);

@@ -1,16 +1,16 @@
 package fr.azodox.gtb.listener.inventory
 
-import fr.azodox.gtb.GetTheBeacon
 import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.GameState
-import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.plugin.Plugin
 
-class PlayerInteractionListener(private val game: Game) : Listener {
+class PlayerInteractionListener(private val game: Game, private val javaPlugin: Plugin) : Listener {
 
     @EventHandler
     fun onInteract(event: PlayerInteractEvent) {
@@ -18,13 +18,11 @@ class PlayerInteractionListener(private val game: Game) : Listener {
             val item = event.item ?: return
             val player = event.player
 
-            when (item.type) {
-                Material.WHITE_BANNER -> {
-                    if (game.state == GameState.WAITING) {
-
-                    }
+            when (game.state) {
+                GameState.WAITING, GameState.STARTING -> {
+                    if (item.itemMeta.persistentDataContainer.has(NamespacedKey(javaPlugin, "teamselectobject"), PersistentDataType.STRING))
+                        game.switchToRandomTeam(player)
                 }
-
                 else -> {}
             }
         }

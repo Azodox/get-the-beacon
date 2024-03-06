@@ -1,23 +1,26 @@
 package fr.azodox.gtb.game
 
 import fr.azodox.gtb.GetTheBeacon
-import fr.azodox.gtb.event.game.player.GamePlayerInitializationEvent
 import fr.azodox.gtb.event.game.GameStateChangeEvent
+import fr.azodox.gtb.event.game.player.GamePlayerInitializationEvent
 import fr.azodox.gtb.event.game.player.GamePlayerRemovedEvent
 import fr.azodox.gtb.game.team.GameTeam
-import fr.azodox.gtb.lang.LanguageCore
+import fr.azodox.gtb.game.team.view.GameTeamChoiceView
 import fr.azodox.gtb.lang.language
 import me.devnatan.inventoryframework.ViewFrame
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
 data class Game(
+    val plugin: GetTheBeacon,
     val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
     val name: String = "GetTheBeacon $id",
     private val waitingPlayers: MutableList<UUID> = mutableListOf(),
+    private val gamePlayers: MutableList<UUID> = mutableListOf(),
+    var minPlayers: Int = 2,
     private val teams: MutableList<GameTeam> = mutableListOf()
 ) {
 
@@ -28,28 +31,47 @@ data class Game(
             Bukkit.getPluginManager().callEvent(GameStateChangeEvent(this, previous, value))
         }
 
-    fun start(sender: CommandSender){
-        val language = if (sender is Player) language(sender) else LanguageCore.DEFAULT_LANGUAGE
+    private var countDownTask: BukkitTask? = null
+    private var currentTeamThreshold = 1
 
-        if(teams.isEmpty())
+    fun start() {
+        countDownTask?.cancel()
+
+        if (teams.isEmpty())
             throw IllegalStateException("No team registered")
 
-        if(teams.size < 2)
+        if (teams.size < 2)
             throw IllegalStateException("Not enough teams registered")
 
-        if(waitingPlayers.size < 2) {
-            sender.sendMessage(
-                language.message("start.not-enough-players").color(NamedTextColor.RED)
-            )
-            return
-        }
-
         state = GameState.STARTING
-        // TODO: COUNTDOWN + START
+        var time = plugin.config.getInt("game.starting-time")
+        countDownTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
+            if (waitingPlayers.size < 2) {
+                state = GameState.WAITING
+                waitingPlayers.forEach {
+                    Bukkit.getPlayer(it)?.sendActionBar(language(it).message("start.not-enough-players").color(NamedTextColor.RED))
+                }
+
+                Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
+            }
+
+            if (time == 0) {
+                state = GameState.IN_GAME
+                gamePlayers.addAll(waitingPlayers)
+                Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
+                return@Runnable
+            }
+
+            waitingPlayers.forEach {
+                Bukkit.getPlayer(it)?.sendActionBar(language(it).format("start.starting", time.toString()))
+            }
+
+            time--
+        }, 0, 20)
     }
 
     fun registerTeam(team: GameTeam) {
-        if(teams.contains(team)) {
+        if (teams.contains(team)) {
             throw IllegalArgumentException("Team '${team.name}' already registered")
         }
         teams.add(team)
@@ -63,14 +85,45 @@ data class Game(
 
     fun removePlayer(player: UUID) {
         waitingPlayers.remove(player)
-        Bukkit.getPluginManager().callEvent(GamePlayerRemovedEvent(this, Bukkit.getOfflinePlayer(player)))
+        Bukkit.getPluginManager().callEvent(GamePlayerRemovedEvent(this, Bukkit.getPlayer(player)!!))
     }
 
     fun getWaitingPlayers(): List<Player> {
         return waitingPlayers.map { Bukkit.getPlayer(it)!! }.toList()
     }
 
+    fun getPlayerTeam(player: Player): GameTeam? {
+        return teams.find { it.players.contains(player.uniqueId) }
+    }
+
     fun getTeams(): List<GameTeam> {
         return teams.toList()
+    }
+
+    fun switchToRandomTeam(player: Player) {
+        val previousTeam = getPlayerTeam(player)
+        val newTeam = getBestMatchingTeamForPlayer(player) ?: return
+        previousTeam?.leave(player)
+        newTeam.join(player.uniqueId)
+        checkThreshold()
+    }
+
+    private fun checkThreshold() {
+        teams.maxByOrNull { it.players.size }?.let {
+            if (it.players.size > currentTeamThreshold) {
+                currentTeamThreshold = it.players.size
+            }
+        }
+    }
+
+    private fun getBestMatchingTeamForPlayer(player: Player): GameTeam? {
+        val previousTeam = getPlayerTeam(player)
+        return teams.filter { it != previousTeam && it.players.size < currentTeamThreshold }.minByOrNull { it.size }
+    }
+
+    fun openTeamChoiceView(player: Player) {
+        val viewFrame = ViewFrame.create(plugin)
+        viewFrame.with(GameTeamChoiceView(this.teams)).register()
+        viewFrame.open(GameTeamChoiceView::class.java, player)
     }
 }

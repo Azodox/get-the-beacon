@@ -7,8 +7,11 @@ import org.bukkit.event.HandlerList
 open class GameEvent(open val game: Game) : Event(false) {
 
     companion object {
-        @JvmField val handlerList: HandlerList = HandlerList()
-        @JvmStatic fun getHandlerList(): HandlerList {
+        @JvmField
+        val handlerList: HandlerList = HandlerList()
+
+        @JvmStatic
+        fun getHandlerList(): HandlerList {
             return handlerList
         }
     }
@@ -16,5 +19,4 @@ open class GameEvent(open val game: Game) : Event(false) {
     override fun getHandlers(): HandlerList {
         return handlerList
     }
-
 }

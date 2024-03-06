@@ -13,8 +13,11 @@ class PlayerQuitListener(private val gtb: GetTheBeacon) : Listener {
     fun onQuit(event: PlayerQuitEvent) {
         val game = gtb.game
         when (game.state) {
-            GameState.WAITING -> {
+            GameState.WAITING, GameState.STARTING -> {
                 game.removePlayer(event.player.uniqueId)
+                event.quitMessage(Component.empty())
+            }
+            GameState.IN_GAME -> {
                 event.quitMessage(Component.empty())
             }
 

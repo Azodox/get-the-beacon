@@ -3,13 +3,14 @@
   "locale": "fr-fr",
   "messages":{
     "start.not-enough-players": "Il n'y a pas assez de joueurs pour commencer la partie.",
+    "start.starting": "La partie commence dans <yellow>%s</yellow>.",
     "lobby.player.join": "<yellow><bold>%s</bold></yellow> <gray>a rejoint le jeu.",
     "lobby.player.quit": "<yellow><bold>%s</bold></yellow> <gray>a quitté le jeu.",
     "lobby.team.choice.title": "Choix de l'équipe",
     "lobby.team.choice.lore.not-joined": "<gray>Cliquez pour rejoindre l'équipe <yellow>%team%</yellow>.\n\n<green>Nombre de joueurs: <yellow>%size%</yellow></green>",
     "lobby.team.choice.lore.already-in": "<red>Vous êtes déjà dans l'équipe <yellow>%team%</yellow>.</red>\n\n<green>Nombre de joueurs: <yellow>%size%</yellow></green>",
-    "lobby.team.choice.joined": "Vous avez rejoint l'équipe <yellow>%team%</yellow>.",
-    "lobby.team.choice.left": "Vous avez quitté l'équipe <yellow>%team%</yellow>.",
+    "lobby.team.choice.joined": "Vous avez rejoint l'équipe <yellow>%s</yellow>.",
+    "lobby.team.choice.left": "Vous avez quitté l'équipe <yellow>%s</yellow>.",
     "lobby.team.choice.item.name": "Choisissez votre équipe",
     "language.command.set": "La langue a été définie sur <yellow>%s</yellow>.",
     "language.command.help": "Liste des langues disponibles : <yellow>%s</yellow>."
