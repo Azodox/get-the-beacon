@@ -25,6 +25,13 @@ object FileUtil {
 
             Files.walk(path).forEach { sourcePath ->
                 val targetPath = Paths.get(destinationFolder.absolutePath, sourcePath.toString())
+
+                /*
+                Check if the file already exists in order to avoid FileAlreadyExistsException
+                 */
+                if (Files.exists(targetPath))
+                    return@forEach
+
                 Files.copy(sourcePath, targetPath)
                 GetTheBeacon.LOGGER.info("Copied ${sourcePath.fileName.name} to data folder!")
             }

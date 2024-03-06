@@ -15,6 +15,9 @@ import java.io.File
 import java.nio.file.*
 import java.util.UUID
 import kotlin.io.path.inputStream
+import kotlin.io.path.name
+
+private val LOCALES_FOLDER_IGNORES = listOf("userdata.json")
 
 class LanguageCore(private val plugin: JavaPlugin) {
 
@@ -37,6 +40,9 @@ class LanguageCore(private val plugin: JavaPlugin) {
             val dataFolderLocalesFolder = File(plugin.dataFolder, "/locales")
 
             Files.list(dataFolderLocalesFolder.toPath()).forEach { file ->
+                if (LOCALES_FOLDER_IGNORES.any { file.name == it })
+                    return@forEach
+
                 val language = Json.decodeFromStream<Language>(file.inputStream())
                 languages[language.locale] = language
                 GetTheBeacon.LOGGER.info("Loaded language : ${language.name} (${language.locale})")
@@ -68,6 +74,10 @@ class LanguageCore(private val plugin: JavaPlugin) {
                 return
         }
         setLocale(player, DEFAULT_LANGUAGE.locale)
+    }
+
+    fun reload(){
+        init()
     }
 
     private fun createDataFile(){

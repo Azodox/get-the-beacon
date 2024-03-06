@@ -12,6 +12,7 @@
     "lobby.team.choice.left": "Vous avez quitté l'équipe <yellow>%team%</yellow>.",
     "lobby.team.choice.item.name": "Choisissez votre équipe",
     "language.command.set": "La langue a été définie sur <yellow>%s</yellow>.",
-    "language.command.help": "Liste des langues disponibles : <yellow>%s</yellow>."
+    "language.command.help": "Liste des langues disponibles : <yellow>%s</yellow>.",
+    "language.command.reload": "Les langues ont été rechargées."
   }
 }
