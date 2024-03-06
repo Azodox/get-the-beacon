@@ -10,6 +10,7 @@ import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
 import fr.azodox.gtb.listener.game.player.GamePlayerRemovedListener
 import fr.azodox.gtb.listener.inventory.PlayerInteractionListener
+import fr.azodox.gtb.util.FileUtil
 import fr.azodox.gtb.util.LocationSerialization
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -30,11 +31,7 @@ class GetTheBeacon : JavaPlugin() {
 
     override fun onEnable() {
         saveDefaultConfig()
-        copyFiles(
-            arrayOf(
-                "teams.yml"
-            )
-        )
+        this::class.java.getResource("/teams.yml")?.let { FileUtil.copyFilesFromJar(dataFolder, it.toURI()) }
 
         languageCore.init()
         game = Game()
@@ -54,22 +51,6 @@ class GetTheBeacon : JavaPlugin() {
         manager.registerCommand(LanguageCommand(languageCore))
 
         LOGGER.info("Enabled!")
-    }
-
-    private fun copyFiles(files: Array<String>) {
-        files.forEach {
-            if (!dataFolder.exists()) dataFolder.mkdir()
-
-            val file = File(dataFolder, it)
-            if (!file.exists()) file.createNewFile()
-
-            if (file.length() != 0L) return
-
-            file.outputStream().use { output ->
-                getResource(it)?.copyTo(output)
-                LOGGER.info("Copied $it to data folder!")
-            }
-        }
     }
 
     private fun loadTeams() {

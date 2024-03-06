@@ -4,19 +4,16 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.azodox.gtb.GetTheBeacon
 import fr.azodox.gtb.lang.LanguageCore.Companion.DEFAULT_LANGUAGE
+import fr.azodox.gtb.util.FileUtil
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.*
 import java.util.UUID
-import java.util.zip.ZipEntry
 import kotlin.io.path.inputStream
-import kotlin.io.path.isDirectory
 
 class LanguageCore(private val plugin: JavaPlugin) {
 
@@ -35,16 +32,13 @@ class LanguageCore(private val plugin: JavaPlugin) {
     fun init(){
         val url = this::class.java.getResource("/locales")
         if (url != null) {
-            val fs = FileSystems.newFileSystem(url.toURI(), mapOf("create" to "true"))
-            val path = fs.getPath("/locales")
-            Files.walk(path).forEach {
-                if(it.isDirectory()) {
-                    Files.list(path).forEach {file ->
-                        val language = Json.decodeFromStream<Language>(file.inputStream())
-                        languages[language.locale] = language
-                        GetTheBeacon.LOGGER.info("Loaded language : ${language.name} (${language.locale})")
-                    }
-                }
+            FileUtil.copyFilesFromJar(plugin.dataFolder, url.toURI())
+            val dataFolderLocalesFolder = File(plugin.dataFolder, "/locales")
+
+            Files.list(dataFolderLocalesFolder.toPath()).forEach { file ->
+                val language = Json.decodeFromStream<Language>(file.inputStream())
+                languages[language.locale] = language
+                GetTheBeacon.LOGGER.info("Loaded language : ${language.name} (${language.locale})")
             }
         }
         createDataFile()
