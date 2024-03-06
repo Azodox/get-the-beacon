@@ -1,12 +1,16 @@
 package fr.azodox.gtb
 
+import co.aikar.commands.PaperCommandManager
+import fr.azodox.gtb.commands.LanguageCommand
 import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
-import fr.azodox.gtb.listener.GamePlayerInitializationListener
+import fr.azodox.gtb.listener.game.player.GamePlayerInitializationListener
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
+import fr.azodox.gtb.listener.game.player.GamePlayerRemovedListener
 import fr.azodox.gtb.listener.inventory.PlayerInteractionListener
+import fr.azodox.gtb.util.FileUtil
 import fr.azodox.gtb.util.LocationSerialization
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -22,16 +26,12 @@ class GetTheBeacon : JavaPlugin() {
         val LOGGER: Logger = Logger.getLogger("GetTheBeacon")
     }
 
-    private val languageCore = LanguageCore()
+    val languageCore = LanguageCore(this)
     lateinit var game: Game
 
     override fun onEnable() {
         saveDefaultConfig()
-        copyFiles(
-            arrayOf(
-                "teams.yml"
-            )
-        )
+        this::class.java.getResource("/teams.yml")?.let { FileUtil.copyFilesFromJar(dataFolder, it.toURI()) }
 
         languageCore.init()
         game = Game()
@@ -41,24 +41,16 @@ class GetTheBeacon : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerJoinListener(this), this)
         server.pluginManager.registerEvents(PlayerQuitListener(this), this)
         server.pluginManager.registerEvents(GamePlayerInitializationListener(), this)
+        server.pluginManager.registerEvents(GamePlayerRemovedListener(), this)
         server.pluginManager.registerEvents(PlayerInteractionListener(game), this)
-        LOGGER.info("Enabled!")
-    }
 
-    private fun copyFiles(files: Array<String>) {
-        files.forEach {
-            if (!dataFolder.exists()) dataFolder.mkdir()
-
-            val file = File(dataFolder, it)
-            if (!file.exists()) file.createNewFile()
-
-            if (file.length() != 0L) return
-
-            file.outputStream().use { output ->
-                getResource(it)?.copyTo(output)
-                LOGGER.info("Copied $it to data folder!")
-            }
+        val manager = PaperCommandManager(this)
+        manager.commandCompletions.registerAsyncCompletion("locales") {
+            LanguageCore.languages.map { it.key }
         }
+        manager.registerCommand(LanguageCommand(languageCore))
+
+        LOGGER.info("Enabled!")
     }
 
     private fun loadTeams() {
