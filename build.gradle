@@ -4,6 +4,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.9.22'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
+    id 'io.papermc.paperweight.userdev' version '1.5.11'
 }
 
 group = 'fr.azodox'
@@ -20,16 +21,25 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
+//    compileOnly 'io.papermc.paper:paper-api:'
+    paperweight.paperDevBundle('1.20.4-R0.1-SNAPSHOT')
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
     implementation 'me.devnatan:inventory-framework-platform-bukkit:3.1.0-rc'
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
+}
+
+build {
+    assemble {
+        dependsOn reobfJar
+    }
+    dependsOn shadowJar
 }
 
 shadowJar {
     relocate 'me.devnatan.inventoryframework', 'fr.azodox.lib.inventoryframework'
     relocate 'co.aikar.commands', 'fr.azodox.lib.acf'
     relocate 'co.aikar.locales', 'fr.azodox.lib.acf.locales'
+    relocate 'kotlin', 'fr.azodox.lib.kotlin'
     archiveClassifier.set('')
 }
 
