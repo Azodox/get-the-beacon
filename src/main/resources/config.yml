@@ -1,7 +1,13 @@
 locales:
   default: fr-fr
-spawn: "world:0:77:0:0:0"
+spawn: "world:0:-60:0:0:0"
 game:
   starting-time: 10
-  min-players: 2
+  min-players: 1
   max-players: 10
+  beacon:
+    spawn: "world:8:-51:8:0:0"
+    default-health: 50.0
+    protection:
+      schematic-file: 'defense.schem'
+      schematic-paste-location: 'world:10:-53:10:0:0'
