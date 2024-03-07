@@ -34,7 +34,6 @@ data class GameTeam(
         bukkitTeam.prefix(displayName.appendSpace())
         bukkitTeam.setAllowFriendlyFire(false)
         bukkitTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS)
-        bukkitTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
     }
 
     fun join(player: UUID) {

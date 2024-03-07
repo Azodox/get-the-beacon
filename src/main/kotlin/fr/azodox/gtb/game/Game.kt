@@ -7,6 +7,7 @@ import fr.azodox.gtb.event.game.player.GamePlayerRemovedEvent
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.game.team.view.GameTeamChoiceView
 import fr.azodox.gtb.lang.language
+import fr.azodox.gtb.util.LocationSerialization
 import me.devnatan.inventoryframework.ViewFrame
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -14,14 +15,15 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
+private const val GAME_BEACON_LOCATION_CONFIG_KEY = "game.beacon.spawn"
+
+private const val GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY = "game.beacon.default-health"
+
 data class Game(
     val plugin: GetTheBeacon,
     val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
     val name: String = "GetTheBeacon $id",
-    private val waitingPlayers: MutableList<UUID> = mutableListOf(),
-    private val gamePlayers: MutableList<UUID> = mutableListOf(),
     var minPlayers: Int = 2,
-    private val teams: MutableList<GameTeam> = mutableListOf()
 ) {
 
     var state: GameState = GameState.WAITING
@@ -31,8 +33,23 @@ data class Game(
             Bukkit.getPluginManager().callEvent(GameStateChangeEvent(this, previous, value))
         }
 
+    private val waitingPlayers: MutableList<UUID> = mutableListOf()
+    private val gamePlayers: MutableList<UUID> = mutableListOf()
+    private val teams: MutableList<GameTeam> = mutableListOf()
+
     private var countDownTask: BukkitTask? = null
     private var currentTeamThreshold = 1
+
+    var beacon: GameBeacon = GameBeacon(
+        plugin,
+        LocationSerialization.deserialize(plugin.config.getString(GAME_BEACON_LOCATION_CONFIG_KEY)!!),
+        GameBeaconState.CENTER,
+        plugin.config.getDouble(GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY)
+    )
+
+    init {
+        beacon.spawnAtDefaultLocation()
+    }
 
     fun start() {
         countDownTask?.cancel()
@@ -46,10 +63,10 @@ data class Game(
         state = GameState.STARTING
         var time = plugin.config.getInt("game.starting-time")
         countDownTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
-            if (waitingPlayers.size < 2) {
+            if (teams.sumOf { it.players.size } < minPlayers) {
                 state = GameState.WAITING
                 waitingPlayers.forEach {
-                    Bukkit.getPlayer(it)?.sendActionBar(language(it).message("start.not-enough-players").color(NamedTextColor.RED))
+                    Bukkit.getPlayer(it)?.sendMessage(language(it).message("start.not-enough-players").color(NamedTextColor.RED))
                 }
 
                 Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
@@ -57,7 +74,7 @@ data class Game(
 
             if (time == 0) {
                 state = GameState.IN_GAME
-                gamePlayers.addAll(waitingPlayers)
+                gamePlayers.addAll(teams.map { it.players }.flatten())
                 Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
                 return@Runnable
             }
