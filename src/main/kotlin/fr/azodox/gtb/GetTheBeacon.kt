@@ -7,6 +7,8 @@ import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
+import fr.azodox.gtb.listener.entity.SlimeTakesDamageListener
+import fr.azodox.gtb.listener.game.beacon.GameBeaconTakesDamageListener
 import fr.azodox.gtb.listener.game.player.*
 import fr.azodox.gtb.listener.game.player.environment.GamePlayerBreakBlockListener
 import fr.azodox.gtb.listener.game.player.environment.GamePlayerDropsItemListener
@@ -22,6 +24,7 @@ import fr.azodox.gtb.util.LocationSerialization
 import me.devnatan.inventoryframework.ViewFrame
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.Listener
@@ -66,7 +69,9 @@ class GetTheBeacon : JavaPlugin() {
             GameStartsListener(),
             PlayerJoinListener(this),
             PlayerQuitListener(this),
-            PlayerInteractionListener(game, this)
+            PlayerInteractionListener(game, this),
+            SlimeTakesDamageListener(game),
+            GameBeaconTakesDamageListener()
         )
 
         val manager = PaperCommandManager(this)
@@ -74,6 +79,11 @@ class GetTheBeacon : JavaPlugin() {
             LanguageCore.languages.map { it.key }
         }
         manager.registerCommand(LanguageCommand(languageCore))
+
+        server.worlds.forEach { world ->
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
+            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false)
+        }
 
         LOGGER.info("Enabled")
     }
