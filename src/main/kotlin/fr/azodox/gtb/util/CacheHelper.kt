@@ -1,5 +1,8 @@
 package fr.azodox.gtb.util
 
+/**
+ * A simple cache helper to store objects in a map
+ */
 object CacheHelper {
     private val cache = mutableMapOf<String, Any>()
 

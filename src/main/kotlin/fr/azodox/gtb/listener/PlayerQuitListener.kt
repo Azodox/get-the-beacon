@@ -17,7 +17,9 @@ class PlayerQuitListener(private val gtb: GetTheBeacon) : Listener {
                 game.removePlayer(event.player.uniqueId)
                 event.quitMessage(Component.empty())
             }
+
             GameState.IN_GAME -> {
+                game.removeBoard(event.player.uniqueId)
                 event.quitMessage(Component.empty())
             }
 

@@ -1,7 +1,7 @@
 {
   "name": "Français (France)",
   "locale": "fr-fr",
-  "messages":{
+  "messages": {
     "start.not-enough-players": "Il n'y a pas assez de joueurs pour commencer la partie.",
     "start.starting": "La partie commence dans <yellow>%s</yellow>.",
     "lobby.player.join": "<yellow><bold>%s</bold></yellow> <gray>a rejoint le jeu.",
@@ -12,6 +12,11 @@
     "lobby.team.choice.joined": "Vous avez rejoint l'équipe <yellow>%s</yellow>.",
     "lobby.team.choice.left": "Vous avez quitté l'équipe <yellow>%s</yellow>.",
     "lobby.team.choice.item.name": "Choisissez votre équipe",
+    "game.scoreboard.title": "<gradient:blue:white:blue>GetTheBeacon</gradient>",
+    "game.scoreboard.remaining-time": "Temps restant: <yellow>%s</yellow>",
+    "game.scoreboard.current-objective": "Objectif: <yellow>%s</yellow>",
+    "game.scoreboard.role": "Rôle: <yellow>%s</yellow>",
+    "game.scoreboard.next-event": "Prochain évènement: <yellow>%s</yellow>",
     "language.command.set": "La langue a été définie sur <yellow>%s</yellow>.",
     "language.command.help": "Liste des langues disponibles : <yellow>%s</yellow>.",
     "language.command.reload": "Les langues ont été rechargées."
