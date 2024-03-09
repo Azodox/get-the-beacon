@@ -120,6 +120,9 @@ class GameBeacon(
         display.block = block.blockData
         pickedUpBeacons[player.uniqueId] = display
         block.type = Material.AIR
+        Bukkit.getOnlinePlayers().forEach {
+            it.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.0f)
+        }
         state = GameBeaconState.PICKED_UP
     }
 }
