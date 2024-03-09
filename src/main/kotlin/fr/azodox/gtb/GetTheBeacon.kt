@@ -7,7 +7,9 @@ import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
+import fr.azodox.gtb.listener.entity.EndCrystalTakesDamageListener
 import fr.azodox.gtb.listener.entity.SlimeTakesDamageListener
+import fr.azodox.gtb.listener.game.beacon.GameBeaconPickUpListener
 import fr.azodox.gtb.listener.game.beacon.GameBeaconTakesDamageListener
 import fr.azodox.gtb.listener.game.player.*
 import fr.azodox.gtb.listener.game.player.environment.GamePlayerBreakBlockListener
@@ -71,7 +73,10 @@ class GetTheBeacon : JavaPlugin() {
             PlayerQuitListener(this),
             PlayerInteractionListener(game, this),
             SlimeTakesDamageListener(game),
-            GameBeaconTakesDamageListener()
+            GameBeaconTakesDamageListener(),
+            EndCrystalTakesDamageListener(this, game),
+            GameBeaconPickUpListener(game),
+            GamePlayerMovesListener(game)
         )
 
         val manager = PaperCommandManager(this)

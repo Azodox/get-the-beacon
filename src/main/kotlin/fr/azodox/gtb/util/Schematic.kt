@@ -61,9 +61,7 @@ class Schematic(private val plugin: Plugin, private val schematic: File) {
      * @see .loadSchematic
      */
     fun pasteSchematic(loc: Location): Collection<Location> {
-        if (width.toInt() == 0 || height.toInt() == 0 || length.toInt() == 0 || blocks.isEmpty()) {
-            throw Exception("Data has not been loaded yet")
-        }
+        checkIfSchematicIsLoaded()
 
         val tracker = Data()
 
@@ -88,13 +86,13 @@ class Schematic(private val plugin: Plugin, private val schematic: File) {
                         ((loc.blockZ - width) + (x + 1)).toDouble()
                     )
 
-                    val data = blocks[blockDatas[index].toInt()]
+                    val blockData = blocks[blockDatas[index].toInt()] ?: continue
 
                     /*
                      * Ignore blocks that aren't air. Change this if you want the air to destroy blocks too.
                      * Add items to delayedBlocks if you want them placed last, or if they get broken.
                      */
-                    val material = data!!.material
+                    val material = blockData.material
                     if (material != Material.AIR) {
                         val nbtMaterial: NBTMaterial = NBTMaterial.fromBukkit(material)
                         if (!nbtMaterial.isDelayed) {
@@ -180,6 +178,77 @@ class Schematic(private val plugin: Plugin, private val schematic: File) {
     }
 
     /**
+     * Undoes the schematic paste. This should be used after loading and pasting the schematic.
+     * @param loc the location where the schematic was pasted
+     * @param ignoredMaterials block types that won't be deleted (e.g. beacon)
+     */
+    fun undo(loc: Location, ignoredMaterials: List<Material> = listOf()) {
+        checkIfSchematicIsLoaded()
+
+        val tracker = Data()
+
+        val indexLocations = LinkedHashMap<Int, Location>()
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                for (z in 0 until length) {
+                    val index = y * width * length + z * width + x
+
+                    val location = Location(
+                        loc.world,
+                        (loc.blockX - z).toDouble(),
+                        (y + loc.blockY).toDouble(),
+                        ((loc.blockZ - width) + (x + 1)).toDouble()
+                    )
+
+                    val blockData = blocks[blockDatas[index].toInt()] ?: continue
+
+                    /*
+                     * Ignore blocks that aren't air and are in the ignoredMaterials list.
+                     */
+                    val material = blockData.material
+                    if (material != Material.AIR && !ignoredMaterials.contains(material)) {
+                        indexLocations[index] = location
+                    }
+                }
+            }
+        }
+
+        // Start removing each block every tick
+        val task: AtomicReference<BukkitTask> = AtomicReference<BukkitTask>()
+
+        tracker.trackCurrentBlock = 0
+
+        val undoTask = Runnable {
+            val locations: List<Location> = ArrayList(indexLocations.values)
+            val indexes: List<Int> = ArrayList(indexLocations.keys)
+
+            val block = locations[tracker.trackCurrentBlock].block
+
+            block.type = Material.AIR
+            tracker.trackCurrentBlock++
+            if (tracker.trackCurrentBlock >= locations.size || tracker.trackCurrentBlock >= indexes.size) {
+                task.get().cancel()
+                tracker.trackCurrentBlock = 0
+            }
+        }
+
+        task.set(
+            plugin.server.scheduler.runTaskTimer(
+                plugin,
+                undoTask,
+                0,
+                1L
+            )
+        )
+    }
+
+    private fun checkIfSchematicIsLoaded() {
+        if (width.toInt() == 0 || height.toInt() == 0 || length.toInt() == 0 || blocks.isEmpty()) {
+            throw Exception("Data has not been loaded yet")
+        }
+    }
+
+    /**
      * Loads the schematic file. This should **always** be used before pasting a schematic.
      * @return schematic (self)
      */
@@ -222,7 +291,7 @@ class Schematic(private val plugin: Plugin, private val schematic: File) {
             blocks[id] = blockData
         }
 
-        // Load all material types - need to do more caching here sometime todo
+        // Load all material types - need to do more caching here sometime
         for (blockData in blockDatas) {
             val data: BlockData = blocks[blockData.toInt()] ?: continue
             materials.add(data.material)
@@ -251,7 +320,7 @@ class Schematic(private val plugin: Plugin, private val schematic: File) {
     /**
      * Hacky method to avoid "final".
      */
-    protected class Data {
+    private class Data {
         var trackCurrentBlock: Int = 0
     }
 }
