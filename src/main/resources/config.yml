@@ -3,5 +3,24 @@ locales:
 spawn: "world:0:77:0:0:0"
 game:
   starting-time: 10
-  min-players: 2
+  min-players: 1
   max-players: 10
+  scoreboard:
+    phase-1:
+      title: "game.scoreboard.title"
+      lines:
+        - "game.scoreboard.remaining-time"
+        - ""
+        - "game.scoreboard.current-objective"
+        - ""
+        - "game.scoreboard.role"
+        - "game.scoreboard.next-event"
+    phase-2:
+      title: "game.scoreboard.title"
+      lines:
+        - "game.scoreboard.remaining-time"
+        - ""
+        - "game.scoreboard.current-objective"
+        - ""
+        - "game.scoreboard.role"
+        - "game.scoreboard.next-event"
