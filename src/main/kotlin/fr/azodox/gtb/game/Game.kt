@@ -41,7 +41,7 @@ data class Game(
     private var currentTeamThreshold = 1
 
     var beacon: GameBeacon = GameBeacon(
-        plugin,
+        this,
         LocationSerialization.deserialize(plugin.config.getString(GAME_BEACON_LOCATION_CONFIG_KEY)!!),
         GameBeaconState.CENTER,
         plugin.config.getDouble(GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY)
@@ -107,6 +107,10 @@ data class Game(
 
     fun getWaitingPlayers(): List<Player> {
         return waitingPlayers.map { Bukkit.getPlayer(it)!! }.toList()
+    }
+
+    fun getOnlinePlayers(): List<Player> {
+        return gamePlayers.mapNotNull { Bukkit.getPlayer(it) }.filter { it.isOnline }.toList()
     }
 
     fun getPlayerTeam(player: Player): GameTeam? {

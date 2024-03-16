@@ -86,6 +86,7 @@ class GetTheBeacon : JavaPlugin() {
         manager.registerCommand(LanguageCommand(languageCore))
 
         server.worlds.forEach { world ->
+            world.time = 0
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
             world.setGameRule(GameRule.DO_WEATHER_CYCLE, false)
         }

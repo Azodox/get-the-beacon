@@ -14,7 +14,6 @@ import org.bukkit.block.Block
 import org.bukkit.entity.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.*
@@ -32,7 +31,7 @@ private const val GAME_BEACON_PROTECTION_CRYSTALS_AMOUNT_KEY = "game.beacon.prot
 private const val GAME_BEACON_PROTECTION_CRYSTALS_LOCATIONS_KEY = "game.beacon.protection.end-crystals-locations"
 
 class GameBeacon(
-    internal val plugin: Plugin,
+    val game: Game,
     private val defaultLocation: Location,
     var state: GameBeaconState,
     val defaultHealth: Double
@@ -84,6 +83,7 @@ class GameBeacon(
     fun triggerProtection() {
         if (state == GameBeaconState.PROTECTED) return
         this.state = GameBeaconState.PROTECTED
+        val plugin = game.plugin
         this.protection = GameBeaconProtection(
             this,
             plugin.config.getDouble(
@@ -120,7 +120,8 @@ class GameBeacon(
         display.block = block.blockData
         pickedUpBeacons[player.uniqueId] = display
         block.type = Material.AIR
-        Bukkit.getOnlinePlayers().forEach {
+        location.world.time = 18000
+        game.getOnlinePlayers().forEach {
             it.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.0f)
         }
         state = GameBeaconState.PICKED_UP
@@ -156,9 +157,7 @@ class GameBeaconProtection(
 
         beacon.block = location.world.getBlockAt(beacon.block.location)
 
-        location.world.time = 18000
-
-        Bukkit.getOnlinePlayers().forEach { player ->
+        beacon.game.getOnlinePlayers().forEach { player ->
             val bossBar = BossBar.bossBar(
                 language(player).message(GAME_BEACON_PROTECTION_ENABLED_KEY),
                 1.0f,
@@ -194,7 +193,7 @@ class GameBeaconProtection(
             val crystal = world.spawn(location, EnderCrystal::class.java)
             crystal.isInvulnerable = false
             crystal.persistentDataContainer.set(
-                NamespacedKey(beacon.plugin, "health"),
+                NamespacedKey(beacon.game.plugin, "health"),
                 PersistentDataType.DOUBLE,
                 healthPer
             )
@@ -224,7 +223,7 @@ class GameBeaconProtection(
     }
 
     fun updateCrystalDisplay(crystal: EnderCrystal) {
-        val health = crystal.persistentDataContainer[NamespacedKey(beacon.plugin, "health"), PersistentDataType.DOUBLE]
+        val health = crystal.persistentDataContainer[NamespacedKey(beacon.game.plugin, "health"), PersistentDataType.DOUBLE]
         health?.let { hp ->
             healthDisplays[crystal.uniqueId]?.text(
                 Component.text(

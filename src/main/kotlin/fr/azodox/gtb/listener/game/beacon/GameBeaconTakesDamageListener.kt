@@ -4,7 +4,6 @@ import fr.azodox.gtb.event.game.beacon.GameBeaconTakesDamageEvent
 import fr.azodox.gtb.util.ProgressBarUtil
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 
@@ -13,7 +12,7 @@ class GameBeaconTakesDamageListener : Listener {
     @EventHandler
     fun onBeaconTakesDamage(event: GameBeaconTakesDamageEvent) {
         val beacon = event.beacon
-        Bukkit.getOnlinePlayers().forEach { player ->
+        beacon.game.getOnlinePlayers().forEach { player ->
             player.sendActionBar(
                 Component.text("[").color(NamedTextColor.DARK_GRAY).append(
                     Component.text(
