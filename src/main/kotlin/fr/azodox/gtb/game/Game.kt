@@ -114,7 +114,11 @@ data class Game(
     }
 
     fun getPlayerTeam(player: Player): GameTeam? {
-        return teams.find { it.players.contains(player.uniqueId) }
+        return getPlayerTeam(player.uniqueId)
+    }
+
+    fun getPlayerTeam(uuid: UUID): GameTeam? {
+        return teams.find { it.players.contains(uuid) }
     }
 
     fun getTeams(): List<GameTeam> {

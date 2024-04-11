@@ -20,6 +20,7 @@ data class GameTeam(
     val color: TextColor,
     val size: Int,
     val icon: Material,
+    val beaconDeposit: GameBeaconDeposit,
     private val spawn: Location,
     val players: MutableList<UUID> = mutableListOf()
 ) {
@@ -27,6 +28,8 @@ data class GameTeam(
     private var bukkitTeam: Team
 
     init {
+        beaconDeposit.team = this
+
         val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
         bukkitTeam = scoreboard.getTeam(name) ?: scoreboard.registerNewTeam(name)
         bukkitTeam.displayName(displayName)
@@ -56,4 +59,8 @@ data class GameTeam(
             Bukkit.getPlayer(uuid)?.teleportAsync(spawn)
         }
     }
+}
+
+data class GameBeaconDeposit(val location: Location, val radius: Double){
+    lateinit var team: GameTeam
 }

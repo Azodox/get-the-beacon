@@ -1,7 +1,10 @@
 package fr.azodox.gtb.game
 
+import fr.azodox.gtb.animation.GameBeaconFliesBackAnimation
+import fr.azodox.gtb.event.game.beacon.GameBeaconDepositedEvent
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.language
+import fr.azodox.gtb.util.CacheHelper
 import fr.azodox.gtb.util.LocationSerialization
 import fr.azodox.gtb.util.ProgressBarUtil
 import fr.azodox.gtb.util.Schematic
@@ -14,6 +17,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import java.io.File
 import java.util.*
@@ -24,11 +28,14 @@ private const val GAME_BEACON_PROTECTION_HEALTH_KEY = "game.beacon.protection.he
 
 private const val GAME_BEACON_PROTECTION_SCHEMATIC_FILE_KEY = "game.beacon.protection.schematic-file"
 
-private const val GAME_BEACON_PROTECTION_SCHEMATIC_PASTE_LOCATION_KEY = "game.beacon.protection.schematic-paste-location"
+private const val GAME_BEACON_PROTECTION_SCHEMATIC_PASTE_LOCATION_KEY =
+    "game.beacon.protection.schematic-paste-location"
 
 private const val GAME_BEACON_PROTECTION_CRYSTALS_AMOUNT_KEY = "game.beacon.protection.end-crystals-amount"
 
 private const val GAME_BEACON_PROTECTION_CRYSTALS_LOCATIONS_KEY = "game.beacon.protection.end-crystals-locations"
+
+const val GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT = "beacon_pickedup"
 
 class GameBeacon(
     val game: Game,
@@ -36,7 +43,6 @@ class GameBeacon(
     var state: GameBeaconState,
     val defaultHealth: Double
 ) {
-    val pickedUpBeacons = mutableMapOf<UUID, BlockDisplay>()
 
     private lateinit var itemStack: ItemStack
     internal lateinit var block: Block
@@ -44,7 +50,7 @@ class GameBeacon(
         private set
     lateinit var protection: GameBeaconProtection
         private set
-    private lateinit var owningTeam: GameTeam
+    lateinit var owningTeam: GameTeam
 
 
     private var basePlacementCounter: Int = 0
@@ -91,7 +97,8 @@ class GameBeacon(
             )
         )
 
-        val schematicFile = File(plugin.dataFolder, "schematics/${plugin.config.getString(GAME_BEACON_PROTECTION_SCHEMATIC_FILE_KEY)}")
+        val schematicFile =
+            File(plugin.dataFolder, "schematics/${plugin.config.getString(GAME_BEACON_PROTECTION_SCHEMATIC_FILE_KEY)}")
         schematicFile.mkdirs()
 
         val schematic = Schematic(plugin, schematicFile)
@@ -105,11 +112,13 @@ class GameBeacon(
                 )
             ),
             plugin.config.getInt(GAME_BEACON_PROTECTION_CRYSTALS_AMOUNT_KEY),
-            plugin.config.getStringList(GAME_BEACON_PROTECTION_CRYSTALS_LOCATIONS_KEY).map { LocationSerialization.deserialize(it) }
+            plugin.config.getStringList(GAME_BEACON_PROTECTION_CRYSTALS_LOCATIONS_KEY)
+                .map { LocationSerialization.deserialize(it) }
         )
     }
 
     fun pickUp(player: Player) {
+        val team = game.getPlayerTeam(player) ?: return
         val playerLocation = player.eyeLocation
         val location = playerLocation.subtract(playerLocation.direction)
         location.y = playerLocation.y + 1.0
@@ -118,13 +127,41 @@ class GameBeacon(
         val world = location.world
         val display = world.spawn(location, BlockDisplay::class.java)
         display.block = block.blockData
-        pickedUpBeacons[player.uniqueId] = display
+        CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder", player.uniqueId)
+        CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display", display)
         block.type = Material.AIR
         location.world.time = 18000
         game.getOnlinePlayers().forEach {
             it.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.0f)
         }
         state = GameBeaconState.PICKED_UP
+        val checker = Bukkit.getScheduler()
+            .runTaskTimer(game.plugin, GameBeaconDepositChecker(this, team.beaconDeposit), 0, 20)
+        CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_checker", checker)
+    }
+
+    fun drop(player: Player, dropLocation: Location) {
+        val holder = CacheHelper.get<UUID>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder") ?: return
+        if (holder != player.uniqueId) return
+        CacheHelper.get<BukkitTask>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_checker")?.cancel()
+        CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_checker")
+        CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder")
+        val display = CacheHelper.get<BlockDisplay>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display") ?: return
+        dropLocation.add(0.0, 3.0, 0.0)
+        display.teleport(dropLocation)
+        GameBeaconFliesBackAnimation(this, defaultLocation).runTaskTimerAsynchronously(game.plugin, 0, 1)
+        state = GameBeaconState.DROPPED
+    }
+
+    fun deposit(player: Player) {
+        game.getPlayerTeam(player)?.let { team ->
+            this.owningTeam = team
+            basePlacementCounter++
+            CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder")
+            CacheHelper.get<BlockDisplay>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")?.remove()
+            CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")
+            Bukkit.getPluginManager().callEvent(GameBeaconDepositedEvent(this.game, this, player))
+        }
     }
 }
 
@@ -141,7 +178,12 @@ class GameBeaconProtection(
     private lateinit var protectionSchematicLocation: Location
     private var endCrystalDefaultHealth: Double = 0.0
 
-    fun enable(schematic: Schematic, schematicLocation: Location, crystalAmount: Int, crystalLocations: List<Location>) {
+    fun enable(
+        schematic: Schematic,
+        schematicLocation: Location,
+        crystalAmount: Int,
+        crystalLocations: List<Location>
+    ) {
         val location = beacon.block.location
         val playersNearby = location.getNearbyEntitiesByType(Player::class.java, 3.0)
 
@@ -223,7 +265,8 @@ class GameBeaconProtection(
     }
 
     fun updateCrystalDisplay(crystal: EnderCrystal) {
-        val health = crystal.persistentDataContainer[NamespacedKey(beacon.game.plugin, "health"), PersistentDataType.DOUBLE]
+        val health =
+            crystal.persistentDataContainer[NamespacedKey(beacon.game.plugin, "health"), PersistentDataType.DOUBLE]
         health?.let { hp ->
             healthDisplays[crystal.uniqueId]?.text(
                 Component.text(
@@ -250,7 +293,7 @@ class GameBeaconProtection(
 
         if (this.health <= 0) {
             this.disable()
-        }else{
+        } else {
             updateBossBars()
         }
     }
@@ -267,5 +310,6 @@ enum class GameBeaconState {
     PROTECTED,
     VULNERABLE,
     PICKED_UP,
+    DROPPED,
     BASE
 }

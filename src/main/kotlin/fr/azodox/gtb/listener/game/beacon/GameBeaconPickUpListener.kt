@@ -17,7 +17,7 @@ class GameBeaconPickUpListener(private val game: Game) : Listener {
 
         if (beacon.state == GameBeaconState.VULNERABLE && block.type == Material.BEACON && block.location == beacon.block.location) {
             event.isCancelled = true
-            beacon.pickUp(event.player)
+            beacon.pickUp(player)
         }
     }
 }

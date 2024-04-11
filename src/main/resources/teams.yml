@@ -10,6 +10,9 @@ teams:
     size: 4
     spawn: "world:-175.5:-60:8.5:-90:0"
     icon: "minecraft:red_wool"
+    beaconDeposit:
+      location: "world:-175.5:-60:8.5:-90:0"
+      radius: 5.0
   blue:
     name: Blue
     displayName: '<blue>Blue</blue>'
@@ -17,3 +20,6 @@ teams:
     size: 4
     spawn: "world:193.5:-60:8.5:90:0"
     icon: "minecraft:blue_wool"
+    beaconDeposit:
+      location: "world:193.5:-60:8.5:90:0"
+      radius: 5.0

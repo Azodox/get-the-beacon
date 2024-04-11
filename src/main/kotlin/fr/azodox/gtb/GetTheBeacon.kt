@@ -3,12 +3,14 @@ package fr.azodox.gtb
 import co.aikar.commands.PaperCommandManager
 import fr.azodox.gtb.commands.LanguageCommand
 import fr.azodox.gtb.game.Game
+import fr.azodox.gtb.game.team.GameBeaconDeposit
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
 import fr.azodox.gtb.listener.entity.EndCrystalTakesDamageListener
 import fr.azodox.gtb.listener.entity.SlimeTakesDamageListener
+import fr.azodox.gtb.listener.game.beacon.GameBeaconDepositedListener
 import fr.azodox.gtb.listener.game.beacon.GameBeaconPickUpListener
 import fr.azodox.gtb.listener.game.beacon.GameBeaconTakesDamageListener
 import fr.azodox.gtb.listener.game.player.*
@@ -76,7 +78,9 @@ class GetTheBeacon : JavaPlugin() {
             GameBeaconTakesDamageListener(),
             EndCrystalTakesDamageListener(this, game),
             GameBeaconPickUpListener(game),
-            GamePlayerMovesListener(game)
+            GamePlayerMovesListener(game),
+            GamePlayerDiesListener(game),
+            GameBeaconDepositedListener()
         )
 
         val manager = PaperCommandManager(this)
@@ -108,6 +112,10 @@ class GetTheBeacon : JavaPlugin() {
                     TextColor.color(teams.getString("$key.color")!!.toInt(16)),
                     teams.getInt("$key.size"),
                     Material.getMaterial(teams.getString("$key.icon")!!) ?: Material.WHITE_BANNER,
+                    GameBeaconDeposit(
+                        LocationSerialization.deserialize(teams.getString("$key.beaconDeposit.location")!!),
+                        teams.getDouble("$key.beaconDeposit.radius")
+                    ),
                     LocationSerialization.deserialize(teams.getString("$key.spawn")!!),
                 )
             )
