@@ -164,7 +164,7 @@ class GameBeacon(
             CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")
             Bukkit.getPluginManager().callEvent(GameBeaconDepositedEvent(this.game, this, player))
 
-            val blockLocation = team.deposit.blockLocation
+            val blockLocation = team.beaconDeposit.blockLocation
             if (basePlacementCounter >= game.plugin.config.getInt(GAME_BEACON_MAX_BASE_PLACEMENTS_KEY)) {
                 this.locked = true
                 blockLocation.world.getBlockAt(blockLocation).type = Material.BEACON
