@@ -35,6 +35,8 @@ private const val GAME_BEACON_PROTECTION_CRYSTALS_AMOUNT_KEY = "game.beacon.prot
 
 private const val GAME_BEACON_PROTECTION_CRYSTALS_LOCATIONS_KEY = "game.beacon.protection.end-crystals-locations"
 
+private const val GAME_BEACON_MAX_BASE_PLACEMENTS_KEY = "game.beacon.max-base-placements"
+
 const val GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT = "beacon_pickedup"
 
 class GameBeacon(
@@ -161,6 +163,15 @@ class GameBeacon(
             CacheHelper.get<BlockDisplay>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")?.remove()
             CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")
             Bukkit.getPluginManager().callEvent(GameBeaconDepositedEvent(this.game, this, player))
+
+            val blockLocation = team.deposit.blockLocation
+            if (basePlacementCounter >= game.plugin.config.getInt(GAME_BEACON_MAX_BASE_PLACEMENTS_KEY)) {
+                this.locked = true
+                blockLocation.world.getBlockAt(blockLocation).type = Material.BEACON
+            }else{
+                this.spawn(blockLocation)
+            }
+            state = GameBeaconState.BASE
         }
     }
 }

@@ -114,7 +114,8 @@ class GetTheBeacon : JavaPlugin() {
                     Material.getMaterial(teams.getString("$key.icon")!!) ?: Material.WHITE_BANNER,
                     GameBeaconDeposit(
                         LocationSerialization.deserialize(teams.getString("$key.beaconDeposit.location")!!),
-                        teams.getDouble("$key.beaconDeposit.radius")
+                        teams.getDouble("$key.beaconDeposit.radius"),
+                        LocationSerialization.deserialize(teams.getString("$key.beaconDeposit.blockLocation")!!)
                     ),
                     LocationSerialization.deserialize(teams.getString("$key.spawn")!!),
                 )

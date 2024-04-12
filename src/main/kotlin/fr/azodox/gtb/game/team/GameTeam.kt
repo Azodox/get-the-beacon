@@ -61,6 +61,6 @@ data class GameTeam(
     }
 }
 
-data class GameBeaconDeposit(val location: Location, val radius: Double){
+data class GameBeaconDeposit(val location: Location, val radius: Double, val blockLocation: Location){
     lateinit var team: GameTeam
 }

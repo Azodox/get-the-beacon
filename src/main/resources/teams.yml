@@ -13,6 +13,8 @@ teams:
     beaconDeposit:
       location: "world:-175.5:-60:8.5:-90:0"
       radius: 5.0
+      # Where the beacon should physically be placed
+      blockLocation: "world:-175.5:-58:8.5:-90:0"
   blue:
     name: Blue
     displayName: '<blue>Blue</blue>'
@@ -23,3 +25,4 @@ teams:
     beaconDeposit:
       location: "world:193.5:-60:8.5:90:0"
       radius: 5.0
+      blockLocation: "world:193.5:-58:8.5:90:0"
