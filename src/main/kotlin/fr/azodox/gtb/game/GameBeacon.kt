@@ -54,7 +54,6 @@ class GameBeacon(
         private set
     lateinit var owningTeam: GameTeam
 
-
     private var basePlacementCounter: Int = 0
     private var instabilityLevel: Double = 0.0
     private var locked: Boolean = false
@@ -62,7 +61,21 @@ class GameBeacon(
     var health: Double = defaultHealth
 
     fun spawnAtDefaultLocation() {
+        defaultLocation.world.time = 1000
+        state = GameBeaconState.CENTER
         spawn(defaultLocation)
+    }
+
+    fun returnToDefaultLocation() {
+        slime.remove()
+        health = defaultHealth
+
+        val display = block.location.world.spawn(block.location, BlockDisplay::class.java)
+        display.block = block.blockData
+
+        block.type = Material.AIR
+        CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display", display)
+        GameBeaconFliesBackAnimation(this, defaultLocation).runTaskTimer(game.plugin, 0, 1)
     }
 
     private fun spawn(location: Location) {
@@ -70,7 +83,9 @@ class GameBeacon(
         val blockAt = world.getBlockAt(location)
 
         world.difficulty = Difficulty.EASY
-        slime = world.spawn(location.add(0.5, 0.01, 0.5), Slime::class.java)
+        location.x = location.blockX + 0.5
+        location.z = location.blockZ + 0.5
+        slime = world.spawn(location, Slime::class.java)
 
         slime.isInvisible = true
         slime.setAI(false)
@@ -151,7 +166,7 @@ class GameBeacon(
         val display = CacheHelper.get<BlockDisplay>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display") ?: return
         dropLocation.add(0.0, 3.0, 0.0)
         display.teleport(dropLocation)
-        GameBeaconFliesBackAnimation(this, defaultLocation).runTaskTimerAsynchronously(game.plugin, 0, 1)
+        GameBeaconFliesBackAnimation(this, defaultLocation).runTaskTimer(game.plugin, 0, 1)
         state = GameBeaconState.DROPPED
     }
 
@@ -159,6 +174,8 @@ class GameBeacon(
         game.getPlayerTeam(player)?.let { team ->
             this.owningTeam = team
             basePlacementCounter++
+            CacheHelper.get<BukkitTask>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_checker")?.cancel()
+            CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_checker")
             CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder")
             CacheHelper.get<BlockDisplay>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")?.remove()
             CacheHelper.remove(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display")
@@ -168,9 +185,9 @@ class GameBeacon(
             if (basePlacementCounter >= game.plugin.config.getInt(GAME_BEACON_MAX_BASE_PLACEMENTS_KEY)) {
                 this.locked = true
                 blockLocation.world.getBlockAt(blockLocation).type = Material.BEACON
-            }else{
+            }else
                 this.spawn(blockLocation)
-            }
+            blockLocation.world.time = 1000
             state = GameBeaconState.BASE
         }
     }
