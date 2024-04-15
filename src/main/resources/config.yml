@@ -9,7 +9,7 @@ game:
     spawn: "world:8:-51:8:0:0"
     default-health: 50.0
     protection:
-      health: 1000.0
+      health: 200.0
       schematic-file: 'defense.schem'
       schematic-paste-location: 'world:10:-53:10:0:0'
       end-crystals-amount: 4
