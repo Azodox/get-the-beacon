@@ -1,3 +1,3 @@
 package fr.azodox.gtb.util
 
-fun lerp(x: Double, y: Double, t: Double): Double = x*(1-t)+y*t
+fun lerp(a: Float, b: Float, f: Float): Float = a + f * (b - a)
