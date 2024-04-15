@@ -8,6 +8,7 @@ import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.lang.LanguageCore
 import fr.azodox.gtb.listener.PlayerJoinListener
 import fr.azodox.gtb.listener.PlayerQuitListener
+import fr.azodox.gtb.listener.block.BlockBreakListener
 import fr.azodox.gtb.listener.entity.EndCrystalTakesDamageListener
 import fr.azodox.gtb.listener.entity.SlimeTakesDamageListener
 import fr.azodox.gtb.listener.game.beacon.GameBeaconDepositedListener
@@ -26,6 +27,7 @@ import fr.azodox.gtb.listener.state.GameStateChangeListener
 import fr.azodox.gtb.util.FileUtil
 import fr.azodox.gtb.util.LocationSerialization
 import me.devnatan.inventoryframework.ViewFrame
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.GameRule
@@ -80,7 +82,8 @@ class GetTheBeacon : JavaPlugin() {
             GameBeaconPickUpListener(game),
             GamePlayerMovesListener(game),
             GamePlayerDiesListener(game),
-            GameBeaconDepositedListener()
+            GameBeaconDepositedListener(),
+            BlockBreakListener(game)
         )
 
         val manager = PaperCommandManager(this)
@@ -109,7 +112,7 @@ class GetTheBeacon : JavaPlugin() {
                     game,
                     teams.getString("$key.name")!!,
                     MiniMessage.miniMessage().deserialize(teams.getString("$key.displayName")!!),
-                    TextColor.color(teams.getString("$key.color")!!.toInt(16)),
+                    TextColor.fromHexString(teams.getString("$key.color")!!) ?: NamedTextColor.WHITE,
                     teams.getInt("$key.size"),
                     Material.getMaterial(teams.getString("$key.icon")!!) ?: Material.WHITE_BANNER,
                     GameBeaconDeposit(
