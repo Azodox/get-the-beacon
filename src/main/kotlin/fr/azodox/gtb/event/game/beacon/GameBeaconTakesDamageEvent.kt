@@ -3,9 +3,10 @@ package fr.azodox.gtb.event.game.beacon
 import fr.azodox.gtb.event.GameEvent
 import fr.azodox.gtb.game.Game
 import fr.azodox.gtb.game.GameBeacon
+import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 
-class GameBeaconTakesDamageEvent(game: Game, val beacon: GameBeacon, val damage: Double) : GameEvent(game), Cancellable {
+class GameBeaconTakesDamageEvent(game: Game, val beacon: GameBeacon, val damager: Player, val damage: Double) : GameEvent(game), Cancellable {
 
     private var cancelled = false
 
