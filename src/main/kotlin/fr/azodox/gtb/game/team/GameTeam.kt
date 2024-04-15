@@ -33,7 +33,7 @@ data class GameTeam(
         val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
         bukkitTeam = scoreboard.getTeam(name) ?: scoreboard.registerNewTeam(name)
         bukkitTeam.displayName(displayName)
-        bukkitTeam.color(NamedTextColor.nearestTo(displayName.color()!!))
+        bukkitTeam.color(NamedTextColor.nearestTo(displayName.color() ?: NamedTextColor.WHITE))
         bukkitTeam.prefix(displayName.appendSpace())
         bukkitTeam.setAllowFriendlyFire(false)
         bukkitTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS)
@@ -55,10 +55,46 @@ data class GameTeam(
     fun contains(player: UUID) = players.contains(player)
 
     fun spawnPlayers() {
-        players.forEach { uuid ->
-            Bukkit.getPlayer(uuid)?.teleportAsync(spawn)
+        players.mapNotNull(Bukkit::getPlayer).forEach { player ->
+            player.inventory.clear()
+            player.teleportAsync(spawn)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GameTeam
+
+        if (game != other.game) return false
+        if (name != other.name) return false
+        if (displayName != other.displayName) return false
+        if (bukkitTeam != other.bukkitTeam) return false
+        if (players != other.players) return false
+        if (beaconDeposit != other.beaconDeposit) return false
+        if (icon != other.icon) return false
+        if (size != other.size) return false
+        if (spawn != other.spawn) return false
+        if (color != other.color) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = game.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + displayName.hashCode()
+        result = 31 * result + color.hashCode()
+        result = 31 * result + size
+        result = 31 * result + icon.hashCode()
+        result = 31 * result + beaconDeposit.hashCode()
+        result = 31 * result + spawn.hashCode()
+        result = 31 * result + players.hashCode()
+        result = 31 * result + bukkitTeam.hashCode()
+        return result
+    }
+
 }
 
 data class GameBeaconDeposit(val location: Location, val radius: Double, val blockLocation: Location){
