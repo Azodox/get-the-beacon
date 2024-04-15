@@ -19,12 +19,18 @@ private const val GAME_BEACON_LOCATION_CONFIG_KEY = "game.beacon.spawn"
 
 private const val GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY = "game.beacon.default-health"
 
-data class Game(
+class Game(
     val plugin: GetTheBeacon,
     val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
     val name: String = "GetTheBeacon $id",
     var minPlayers: Int = 2,
 ) {
+
+    init {
+        Bukkit.getWorlds().forEach {
+            it.time = 18000
+        }
+    }
 
     var state: GameState = GameState.WAITING
         set(value) {
@@ -46,10 +52,6 @@ data class Game(
         GameBeaconState.CENTER,
         plugin.config.getDouble(GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY)
     )
-
-    init {
-        beacon.spawnAtDefaultLocation()
-    }
 
     fun start() {
         countDownTask?.cancel()
@@ -73,9 +75,10 @@ data class Game(
             }
 
             if (time == 0) {
-                state = GameState.IN_GAME
                 gamePlayers.addAll(teams.map { it.players }.flatten())
                 Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
+                beacon.spawnAtDefaultLocation()
+                state = GameState.IN_GAME
                 return@Runnable
             }
 
