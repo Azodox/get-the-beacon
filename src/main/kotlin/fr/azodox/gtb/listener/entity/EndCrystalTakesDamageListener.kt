@@ -25,7 +25,7 @@ class EndCrystalTakesDamageListener(val plugin: Plugin, val game: Game) : Listen
                     event.isCancelled = false
                     protection.endCrystalDies(entity)
                 } else {
-                    entity.persistentDataContainer.set(NamespacedKey(plugin, "health"), PersistentDataType.DOUBLE, it - event.damage)
+                    entity.persistentDataContainer[NamespacedKey(plugin, "health"), PersistentDataType.DOUBLE] = it - event.damage
                     protection.updateCrystalDisplay(entity)
                 }
                 protection.damage(event.damage)
