@@ -17,22 +17,27 @@ class SlimeTakesDamageListener(private val game: Game) : Listener {
     @EventHandler
     fun onSlimeTakesDamageByEntity(event: EntityDamageByEntityEvent) {
         if (event.entityType != EntityType.SLIME) return
+        val slime = event.entity as Slime
+
+        val beacon = game.beacon
+        if (beacon.slime.uniqueId != slime.uniqueId)
+            return
+
         if (event.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             event.isCancelled = true
             return
         }
+
         if (event.damager !is Player) {
             event.isCancelled = true
             return
         }
 
-        val beacon = game.beacon
         if (beacon.state == GameBeaconState.PROTECTED) {
             event.isCancelled = true
             return
         }
 
-        val slime = event.entity as Slime
         beacon.health = slime.health
 
         val beaconTakesDamageEvent = GameBeaconTakesDamageEvent(game, beacon, event.damager as Player, event.damage)

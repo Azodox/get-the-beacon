@@ -262,11 +262,8 @@ class GameBeaconProtection(
             val world = location.world
             val crystal = world.spawn(location, EnderCrystal::class.java)
             crystal.isInvulnerable = false
-            crystal.persistentDataContainer.set(
-                NamespacedKey(beacon.game.plugin, "health"),
-                PersistentDataType.DOUBLE,
+            crystal.persistentDataContainer[NamespacedKey(beacon.game.plugin, "health"), PersistentDataType.DOUBLE] =
                 healthPer
-            )
             crystal.isPersistent = true
             crystal.beamTarget = beacon.block.location
             endCrystals.add(crystal.uniqueId)

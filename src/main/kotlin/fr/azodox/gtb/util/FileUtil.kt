@@ -3,7 +3,10 @@ package fr.azodox.gtb.util
 import fr.azodox.gtb.GetTheBeacon
 import java.io.File
 import java.net.URI
-import java.nio.file.*
+import java.nio.file.FileSystemAlreadyExistsException
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.io.path.name
 import kotlin.io.path.toPath
 
@@ -16,7 +19,7 @@ object FileUtil {
      */
     fun copyFilesFromJar(destinationFolder: File, vararg uris: URI) {
         uris.forEach { uri ->
-            val fs = try {
+            try {
                 FileSystems.newFileSystem(uri, mapOf("create" to "true"))
             } catch (_: FileSystemAlreadyExistsException) {
                 FileSystems.getFileSystem(uri)

@@ -263,7 +263,7 @@ class Schematic(private val plugin: Plugin, private val schematic: File) {
         blockDatas = nbt.getByteArray("BlockData")
 
         val palette: CompoundTag = nbt.getCompound("Palette")
-        val tiles = nbt.get("BlockEntities") as ListTag?
+        val tiles = nbt["BlockEntities"] as ListTag?
 
         // Load NBT data
         if (tiles != null) {
