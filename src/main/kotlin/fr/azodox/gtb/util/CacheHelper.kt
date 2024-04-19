@@ -3,6 +3,7 @@ package fr.azodox.gtb.util
 /**
  * A simple cache helper to store objects in a map
  */
+@Suppress("UNCHECKED_CAST", "unused")
 object CacheHelper {
     private val cache = mutableMapOf<String, Any>()
 
@@ -10,8 +11,8 @@ object CacheHelper {
         return cache.getOrPut(key, supplier) as T
     }
 
-    fun <T : Any> get(key: String): T? {
-        return cache[key] as T?
+    fun <T : Any> get(key: String): T {
+        return cache[key] as T
     }
 
     fun <T : Any> put(key: String, value: T) {

@@ -27,10 +27,11 @@ import java.util.Map;
  * ItemBuilder - An API class to create an
  * {@link ItemStack} with just one line of code!
  *
- * @version 1.8.3
  * @author Acquized
+ * @version 1.8.3
  * @contributor Kev575, Azodox_, Virtuaal
  */
+@SuppressWarnings("unused")
 public class ItemBuilder {
 
     private ItemStack item;
@@ -41,12 +42,14 @@ public class ItemBuilder {
     private int damage = 0;
     private boolean unbreakable = false;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
-    private Component displayname;
+    private Component displayName;
     private List<Component> lore = new ArrayList<>();
     private List<ItemFlag> flags = new ArrayList<>();
-    private boolean unsafeStackSize = false;
+    private boolean unsafeStackSizeAllowed = false;
 
-    /** Initalizes the ItemBuilder with {@link Material} */
+    /**
+     * Create a new ItemBuilder with {@link Material}
+     */
     public ItemBuilder(Material material) {
         if (material == null) {
             material = Material.AIR;
@@ -55,12 +58,14 @@ public class ItemBuilder {
         this.material = material;
     }
 
-    /** Initalizes the ItemBuilder with {@link Material} and Amount */
+    /**
+     * Create a new ItemBuilder with {@link Material} and {@link Integer} for the amount of the item
+     */
     public ItemBuilder(Material material, int amount) {
         if (material == null) {
             material = Material.AIR;
         }
-        if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSize)) {
+        if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSizeAllowed)) {
             amount = 1;
         }
         this.amount = amount;
@@ -69,37 +74,39 @@ public class ItemBuilder {
     }
 
     /**
-     * Initalizes the ItemBuilder with {@link Material}, Amount and
-     * Displayname
+     * Create a new ItemBuilder with {@link Material},
+     * {@link Integer} for the amount of the item and a {@link String} for the Display name
      */
-    public ItemBuilder(Material material, int amount, Component displayname) {
+    public ItemBuilder(Material material, int amount, Component displayName) {
         if (material == null) {
             material = Material.AIR;
         }
-        Validate.notNull(displayname, "The displayname is null.");
+        Validate.notNull(displayName, "The display name is null.");
         this.item = new ItemStack(material, amount);
         this.material = material;
-        if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSize)) {
+        if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSizeAllowed)) {
             amount = 1;
         }
         this.amount = amount;
-        this.displayname = displayname;
+        this.displayName = displayName;
     }
 
     /**
-     * Initalizes the ItemBuilder with {@link Material} and Displayname
+     * Create a new ItemBuilder with a {@link Material} and a {@link Component} for the display name
      */
-    public ItemBuilder(Material material, Component displayname) {
+    public ItemBuilder(Material material, Component displayName) {
         if (material == null) {
             material = Material.AIR;
         }
-        Validate.notNull(displayname, "The displayname is null.");
+        Validate.notNull(displayName, "The display name is null.");
         this.item = new ItemStack(material);
         this.material = material;
-        this.displayname = displayname;
+        this.displayName = displayName;
     }
 
-    /** Initalizes the ItemBuilder with a {@link ItemStack} */
+    /**
+     * Create a new ItemBuilder with an {@link ItemStack} as a base
+     */
     public ItemBuilder(ItemStack item) {
         Validate.notNull(item, "The item is null.");
         this.item = item;
@@ -111,40 +118,18 @@ public class ItemBuilder {
 
         if (item.hasItemMeta()) {
             this.meta = item.getItemMeta();
-            this.displayname = item.getItemMeta().displayName();
+            this.displayName = item.getItemMeta().displayName();
             this.lore = item.getItemMeta().lore();
             flags.addAll(item.getItemMeta().getItemFlags());
         }
     }
 
     /**
-     * Initalizes the ItemBuilder with a
-     * {@link FileConfiguration} ItemStack in Path
+     * Create a new ItemBuilder from a {@link FileConfiguration}
+     * and a {@link String} that represents the path
      */
     public ItemBuilder(FileConfiguration cfg, String path) {
         this(cfg.getItemStack(path));
-    }
-
-    /**
-     * Initalizes the ItemBuilder with an already existing
-     *
-     * @deprecated Use the already initalized {@code ItemBuilder} Instance to
-     *             improve performance
-     */
-    @Deprecated
-    public ItemBuilder(ItemBuilder builder) {
-        Validate.notNull(builder, "The ItemBuilder is null.");
-        this.item = builder.item;
-        this.meta = builder.meta;
-        this.material = builder.material;
-        this.amount = builder.amount;
-        this.damage = builder.damage;
-        this.data = builder.data;
-        this.damage = builder.damage;
-        this.enchantments = builder.enchantments;
-        this.displayname = builder.displayname;
-        this.lore = builder.lore;
-        this.flags = builder.flags;
     }
 
     /**
@@ -153,7 +138,7 @@ public class ItemBuilder {
      * @param amount Amount for the ItemStack
      */
     public ItemBuilder amount(int amount) {
-        if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSize))
+        if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSizeAllowed))
             amount = 1;
         this.amount = amount;
         return this;
@@ -162,18 +147,17 @@ public class ItemBuilder {
     /**
      * Adds an information in the persistent data container of the item
      *
-     * @param key the key of the information
-     * @param value the value of the information
+     * @param key        the key of the information
+     * @param value      the value of the information
      * @param javaPlugin the plugin that will be used as the nameSpace of the additional information
-     * @param type the type of the additional information
+     * @param type       the type of the additional information
      * @return the ItemBuilder
      */
     public <T> ItemBuilder persistentInfo(String key, T value, Plugin javaPlugin, PersistentDataType<T, T> type) {
         ItemMeta itemMeta = this.item.getItemMeta();
         NamespacedKey nsk = new NamespacedKey(javaPlugin, key);
         itemMeta.getPersistentDataContainer().set(nsk, type, value);
-        this.meta(itemMeta);
-        return this;
+        return this.meta(itemMeta);
     }
 
     /**
@@ -193,19 +177,7 @@ public class ItemBuilder {
     }
 
     /**
-     * Sets the Damage of the ItemStack
-     *
-     * @param damage Damage for the ItemStack
-     * @deprecated Use {@code ItemBuilder#durability}
-     */
-    @Deprecated
-    public ItemBuilder damage(int damage) {
-        this.damage = damage;
-        return this;
-    }
-
-    /**
-     * Sets the Durability (Damage) of the ItemStack
+     * Sets the durability of the ItemStack
      *
      * @param damage Damage for the ItemStack
      */
@@ -265,21 +237,21 @@ public class ItemBuilder {
      * @param color Color for the ItemStack
      */
     public ItemBuilder color(Color color) {
-        if(this.item.getItemMeta() instanceof LeatherArmorMeta meta) {
-            meta.setColor(color);
-            this.item.setItemMeta(meta);
+        if (this.item.getItemMeta() instanceof LeatherArmorMeta armorMeta) {
+            armorMeta.setColor(color);
+            this.item.setItemMeta(armorMeta);
         }
         return this;
     }
 
     /**
-     * Sets the Displayname of the ItemStack
+     * Sets the display name of the ItemStack
      *
-     * @param displayName Displayname for the ItemStack
+     * @param displayName Display name for the ItemStack
      */
     public ItemBuilder displayName(Component displayName) {
         Validate.notNull(displayName, "The displayName is null.");
-        this.displayname = displayName;
+        this.displayName = displayName;
         return this;
     }
 
@@ -290,7 +262,7 @@ public class ItemBuilder {
      */
     public ItemBuilder lore(Component line) {
         Validate.notNull(line, "The line is null.");
-        if(lore == null){
+        if (lore == null) {
             lore = new ArrayList<>();
         }
         lore.add(line);
@@ -305,21 +277,6 @@ public class ItemBuilder {
     public ItemBuilder lore(List<Component> lore) {
         Validate.notNull(lore, "The lores are null.");
         this.lore = lore;
-        return this;
-    }
-
-    /**
-     * Adds one or more Lines to the Lore of the ItemStack
-     *
-     * @param lines One or more Strings for the ItemStack Lore
-     * @deprecated Use {@code ItemBuilder#lore}
-     */
-    @Deprecated
-    public ItemBuilder lores(Component... lines) {
-        Validate.notNull(lines, "The lines are null.");
-        for (Component line : lines) {
-            lore(line);
-        }
         return this;
     }
 
@@ -370,91 +327,91 @@ public class ItemBuilder {
         return this;
     }
 
-    /** Makes the ItemStack Glow like it had a Enchantment */
+    /**
+     * Makes the ItemStack Glow like it had an Enchantment
+     */
     public ItemBuilder glow() {
         enchant(material != Material.BOW ? Enchantment.ARROW_INFINITE : Enchantment.LUCK, 10);
-        flag(ItemFlag.HIDE_ENCHANTS);
-        return this;
+        return flag(ItemFlag.HIDE_ENCHANTS);
     }
 
 
     /**
      * Allows / Disallows Stack Sizes under 1 and above 64
      *
-     * @param allow Determinates if it should be allowed or not
+     * @param allow Determinate if it should be allowed or not
      */
-    public ItemBuilder unsafeStackSize(boolean allow) {
-        this.unsafeStackSize = allow;
+    public ItemBuilder allowUnsafeStackSize(boolean allow) {
+        this.unsafeStackSizeAllowed = allow;
         return this;
     }
 
-    /** Toggles allowment of stack sizes under 1 and above 64 */
+    /**
+     * Toggles the allowed boolean for stack sizes under 1 and above 64
+     */
     public ItemBuilder toggleUnsafeStackSize() {
-        unsafeStackSize(!unsafeStackSize);
-        return this;
+        return allowUnsafeStackSize(!unsafeStackSizeAllowed);
     }
 
-    /** Returns the Displayname */
-    public Component getDisplayname() {
-        return displayname;
+    /**
+     * Returns the Display name
+     */
+    public Component getDisplayName() {
+        return displayName;
     }
 
-    /** Returns the Amount */
+    /**
+     * Returns the Amount
+     */
     public int getAmount() {
         return amount;
     }
 
-    /** Returns all Enchantments */
+    /**
+     * Returns all Enchantments
+     */
     public Map<Enchantment, Integer> getEnchantments() {
         return enchantments;
     }
 
     /**
-     * Returns the Damage
-     *
-     * @deprecated Use {@code ItemBuilder#getDurability}
+     * Returns the Durability
      */
-    @Deprecated
-    public int getDamage() {
-        return damage;
-    }
-
-    /** Returns the Durability */
     public int getDurability() {
         return damage;
     }
 
-    /** Returns the Lores */
-    public List<Component> getLores() {
-        return lore;
-    }
-
-    /** Returns all ItemFlags */
+    /**
+     * Returns all ItemFlags
+     */
     public List<ItemFlag> getFlags() {
         return flags;
     }
 
-    /** Returns the Material */
+    /**
+     * Returns the Material
+     */
     public Material getMaterial() {
         return material;
     }
 
-    /** Returns the ItemMeta */
+    /**
+     * Returns the ItemMeta
+     */
     public ItemMeta getMeta() {
         return meta;
     }
 
-    /** Returns the MaterialData */
+    /**
+     * Returns the MaterialData
+     */
     public BlockData getData() {
         return data;
     }
 
     /**
-     * Returns all Lores
-     *
-     * @deprecated Use {@code ItemBuilder#getLores}
+     * Returns all Lore Lines
      */
-    @Deprecated
     public List<Component> getLore() {
         return lore;
     }
@@ -462,8 +419,8 @@ public class ItemBuilder {
     /**
      * Converts the Item to a ConfigStack and writes it to path
      *
-     * @param cfg  Configuration File to which it should be writed
-     * @param path Path to which the ConfigStack should be writed
+     * @param cfg  Configuration File to which it should be written
+     * @param path Path to which the ConfigStack should be written
      */
     public ItemBuilder toConfig(FileConfiguration cfg, String path) {
         cfg.set(path, build());
@@ -483,9 +440,9 @@ public class ItemBuilder {
     /**
      * Converts the Item to a ConfigStack and writes it to path
      *
-     * @param cfg     Configuration File to which it should be writed
-     * @param path    Path to which the ConfigStack should be writed
-     * @param builder Which ItemBuilder should be writed
+     * @param cfg     Configuration File to which it should be written
+     * @param path    Path to which the ConfigStack should be written
+     * @param builder Which ItemBuilder should be written
      */
     public static void toConfig(FileConfiguration cfg, String path, ItemBuilder builder) {
         cfg.set(path, builder.build());
@@ -529,8 +486,8 @@ public class ItemBuilder {
         ItemBuilder b = new Gson().fromJson(json, ItemBuilder.class);
         if (overwrite)
             return b;
-        if (b.displayname != null)
-            displayname = b.displayname;
+        if (b.displayName != null)
+            displayName = b.displayName;
         if (b.data != null)
             data = b.data;
         if (b.material != null)
@@ -548,29 +505,31 @@ public class ItemBuilder {
         return this;
     }
 
-    /** Converts the ItemBuilder to a {@link ItemStack} */
+    /**
+     * Converts the ItemBuilder to a {@link ItemStack}
+     */
     public ItemStack build() {
-        item.setType(material);
+        item = item.withType(material);
         item.setAmount(amount);
         ((Damageable) item.getItemMeta()).setDamage(damage);
 
         if (data != null) {
             ((BlockDataMeta) meta).setBlockData(data);
         }
-        if (displayname != null) {
-            meta.displayName(displayname);
+        if (displayName != null) {
+            meta.displayName(displayName);
         }
-        if (lore != null && lore.size() > 0) {
+        if (lore != null && !lore.isEmpty()) {
             meta.lore(lore);
         }
-        if (flags.size() > 0) {
+        if (!flags.isEmpty()) {
             for (ItemFlag f : flags) {
                 meta.addItemFlags(f);
             }
         }
         meta.setUnbreakable(unbreakable);
         item.setItemMeta(meta);
-        if (enchantments.size() > 0) {
+        if (!enchantments.isEmpty()) {
             item.addUnsafeEnchantments(enchantments);
         }
         return item;
