@@ -11,11 +11,14 @@ class GameStateChangeListener : Listener {
 
     @EventHandler
     fun onGameStateChange(event: GameStateChangeEvent) {
-        when(event.value) {
+        when (event.value) {
             GameState.IN_GAME -> {
                 Bukkit.getPluginManager().callEvent(GameStartsEvent(event.game))
             }
-            else -> {}
+
+            GameState.WAITING -> TODO()
+            GameState.STARTING -> TODO()
+            GameState.ENDING -> TODO()
         }
     }
 }

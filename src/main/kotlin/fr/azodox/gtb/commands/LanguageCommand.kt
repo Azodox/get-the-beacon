@@ -21,16 +21,16 @@ class LanguageCommand(private val languageCore: LanguageCore) : BaseCommand() {
     @CommandCompletion("@locales")
     fun setLocale(player: Player, locale: String) {
         languageCore.setLocale(player.uniqueId, locale)
-        player.sendMessage(LanguageCore.languages[locale]!!.format(LANGUAGE_COMMAND_SET, locale))
+        LanguageCore.languages[locale]?.let { player.sendMessage(it.format(LANGUAGE_COMMAND_SET, locale)) }
     }
 
     @Subcommand("reload")
     @Description("Refresh the messages in cache from the locale files")
-    fun reload(sender: CommandSender){
+    fun reload(sender: CommandSender) {
         languageCore.reload()
         if (sender is Player) {
             sender.sendMessage(language(sender).format(LANGUAGE_COMMAND_RELOAD))
-        }else{
+        } else {
             sender.sendMessage("Language files reloaded")
         }
     }

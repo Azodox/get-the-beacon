@@ -16,7 +16,7 @@ object FileUtil {
      */
     fun copyFilesFromJar(destinationFolder: File, vararg uris: URI) {
         uris.forEach { uri ->
-            val fs = try {
+            try {
                 FileSystems.newFileSystem(uri, mapOf("create" to "true"))
             } catch (_: FileSystemAlreadyExistsException) {
                 FileSystems.getFileSystem(uri)

@@ -23,7 +23,7 @@ class PlayerQuitListener(private val gtb: GetTheBeacon) : Listener {
                 event.quitMessage(Component.empty())
             }
 
-            else -> {}
+            GameState.ENDING -> TODO()
         }
     }
 }

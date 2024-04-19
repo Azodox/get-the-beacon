@@ -16,7 +16,7 @@ class GamePhaseChangeListener : Listener {
             2 -> {
                 // Phase 2 related initialization
             }
-            else -> throw IllegalStateException("Unknown phase: ${game.currentPhase}")
+            else -> error("Unknown phase: ${game.currentPhase}")
         }
     }
 }

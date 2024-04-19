@@ -49,11 +49,8 @@ data class Game(
     fun start() {
         countDownTask?.cancel()
 
-        if (teams.isEmpty())
-            throw IllegalStateException("No team registered")
-
-        if (teams.size < 2)
-            throw IllegalStateException("Not enough teams registered")
+        check(teams.isNotEmpty()) { "No team registered" }
+        check(teams.size >= 2) { "Not enough teams registered" }
 
         state = GameState.STARTING
         var time = plugin.config.getInt("game.starting-time")
@@ -84,9 +81,8 @@ data class Game(
     }
 
     fun registerTeam(team: GameTeam) {
-        if (teams.contains(team)) {
-            throw IllegalArgumentException("Team '${team.name}' already registered")
-        }
+        require(!teams.contains(team)) { "Team '${team.name}' already registered" }
+
         teams.add(team)
         GetTheBeacon.LOGGER.info("Registered team '${team.name}'")
     }
