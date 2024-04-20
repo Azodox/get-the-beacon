@@ -19,20 +19,17 @@ class GameBeaconDepositChecker(private val beacon: GameBeacon, private val depos
             return
         }
 
-        val player = nearbyPlayers.first()
+        val nearbyPlayer = nearbyPlayers.first()
         val holder = CacheHelper.get<UUID>(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder")
-        if (holder != player.uniqueId) {
+        if (holder != nearbyPlayer.uniqueId) {
             return
         }
 
         countdown--
         if (countdown > 0) {
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, lerp(1.0f, 0.0f, countdown.toFloat() / baseCountdown.toFloat()))
-            player.sendMessage(language(player).format("game.beacon.deposit-checker.countdown", countdown.toString()))
-        }
-
-        if (countdown <= 0) {
-            beacon.deposit(player)
-        }
+            nearbyPlayer.playSound(nearbyPlayer, Sound.BLOCK_NOTE_BLOCK_PLING, 0.5f, lerp(1.0f, 0.0f, countdown.toFloat() / baseCountdown.toFloat()))
+            nearbyPlayer.sendMessage(language(nearbyPlayer).format("game.beacon.deposit-checker.countdown", countdown.toString()))
+        }else
+            beacon.deposit(nearbyPlayer)
     }
 }
