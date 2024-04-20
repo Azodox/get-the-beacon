@@ -150,7 +150,7 @@ class GameBeacon(
         CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder", player.uniqueId)
         CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display", display)
         block.type = Material.AIR
-        location.world.time = NIGHT_TIME
+        world.time = NIGHT_TIME
         game.getOnlinePlayers().forEach {
             it.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.0f)
         }
