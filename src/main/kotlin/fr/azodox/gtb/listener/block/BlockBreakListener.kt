@@ -11,10 +11,8 @@ class BlockBreakListener(private val game: Game) : Listener {
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
         val block = event.block
-        if (block.type == Material.BEACON) {
-            if (game.beacon.block.location == block.location) {
-                event.isCancelled = true
-            }
+        if (block.type == Material.BEACON && game.beacon.block.location == block.location) {
+            event.isCancelled = true
         }
     }
 }
