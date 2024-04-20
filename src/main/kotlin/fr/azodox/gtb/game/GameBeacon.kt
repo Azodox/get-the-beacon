@@ -39,6 +39,10 @@ private const val GAME_BEACON_MAX_BASE_PLACEMENTS_KEY = "game.beacon.max-base-pl
 
 const val GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT = "beacon_pickedup"
 
+private const val DAY_TIME: Long = 1000
+
+private const val NIGHT_TIME: Long = 18000
+
 class GameBeacon(
     val game: Game,
     private val defaultLocation: Location,
@@ -61,7 +65,7 @@ class GameBeacon(
     var health: Double = defaultHealth
 
     fun spawnAtDefaultLocation() {
-        defaultLocation.world.time = 1000
+        defaultLocation.world.time = DAY_TIME
         state = GameBeaconState.CENTER
         spawn(defaultLocation)
     }
@@ -105,7 +109,6 @@ class GameBeacon(
 
     fun triggerProtection() {
         if (state == GameBeaconState.PROTECTED) return
-        this.state = GameBeaconState.PROTECTED
         val plugin = game.plugin
         this.protection = GameBeaconProtection(
             this,
@@ -118,8 +121,7 @@ class GameBeacon(
             File(plugin.dataFolder, "schematics/${plugin.config.getString(GAME_BEACON_PROTECTION_SCHEMATIC_FILE_KEY)}")
         schematicFile.mkdirs()
 
-        val schematic = Schematic(plugin, schematicFile)
-        schematic.loadSchematic()
+        val schematic = Schematic(plugin, schematicFile).loadSchematic()
 
         protection.enable(
             schematic,
@@ -132,6 +134,7 @@ class GameBeacon(
             plugin.config.getStringList(GAME_BEACON_PROTECTION_CRYSTALS_LOCATIONS_KEY)
                 .map { LocationSerialization.deserialize(it) }
         )
+        this.state = GameBeaconState.PROTECTED
     }
 
     fun pickUp(player: Player) {
@@ -147,7 +150,7 @@ class GameBeacon(
         CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_holder", player.uniqueId)
         CacheHelper.put(GAME_BEACON_PICKED_UP_CACHE_PREFIX_CONSTANT + "_display", display)
         block.type = Material.AIR
-        location.world.time = 18000
+        location.world.time = NIGHT_TIME
         game.getOnlinePlayers().forEach {
             it.playSound(player, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.0f)
         }
@@ -187,7 +190,7 @@ class GameBeacon(
                 blockLocation.world.getBlockAt(blockLocation).type = Material.BEACON
             }else
                 this.spawn(blockLocation)
-            blockLocation.world.time = 1000
+            blockLocation.world.time = DAY_TIME
             state = GameBeaconState.BASE
         }
     }

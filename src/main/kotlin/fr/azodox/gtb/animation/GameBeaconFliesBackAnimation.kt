@@ -29,10 +29,7 @@ class GameBeaconFliesBackAnimation(private val beacon: GameBeacon, private val t
         }
 
         val vector = targetLocation.toVector().subtract(location.toVector()).normalize()
-        location.add(vector)
-
-        location.add(0.0, 0.5, 0.0)
-
+        location.add(vector).add(0.0, 0.5, 0.0)
         display.teleport(location)
         location.world.spawnParticle(Particle.CLOUD, location, 20, 0.0, 0.0, 0.0, 0.0)
     }

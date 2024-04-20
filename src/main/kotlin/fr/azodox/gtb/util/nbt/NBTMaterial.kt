@@ -5,26 +5,8 @@ import org.bukkit.Material
 import java.util.*
 
 enum class NBTMaterial constructor(val isDelayed: Boolean, private val nbtBlock: Class<out NBTBlock>? = null) {
-    SIGN(true, NBTSignBlock::class.java),
     CHEST(false, NBTChestBlock::class.java),
     TRAPPED_CHEST(false, NBTChestBlock::class.java),  // does this exist in nbt?
-
-    OAK_SIGN(true, NBTSignBlock::class.java),
-    SPRUCE_SIGN(true, NBTSignBlock::class.java),
-    BIRCH_SIGN(true, NBTSignBlock::class.java),
-    JUNGLE_SIGN(true, NBTSignBlock::class.java),
-    ACACIA_SIGN(true, NBTSignBlock::class.java),
-    DARK_OAK_SIGN(true, NBTSignBlock::class.java),
-    CRIMSON_SIGN(true, NBTSignBlock::class.java),
-    WARPED_SIGN(true, NBTSignBlock::class.java),
-    OAK_WALL_SIGN(true, NBTSignBlock::class.java),
-    SPRUCE_WALL_SIGN(true, NBTSignBlock::class.java),
-    BIRCH_WALL_SIGN(true, NBTSignBlock::class.java),
-    JUNGLE_WALL_SIGN(true, NBTSignBlock::class.java),
-    ACACIA_WALL_SIGN(true, NBTSignBlock::class.java),
-    DARK_OAK_WALL_SIGN(true, NBTSignBlock::class.java),
-    CRIMSON_WALL_SIGN(true, NBTSignBlock::class.java),
-    WARPED_WALL_SIGN(true, NBTSignBlock::class.java),
 
     BEACON(true, NBTBeaconBlock::class.java),
     OBSIDIAN(true),

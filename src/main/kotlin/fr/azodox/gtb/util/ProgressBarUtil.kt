@@ -1,7 +1,5 @@
 package fr.azodox.gtb.util
 
-import com.google.common.base.Strings
-
 object ProgressBarUtil {
 
     fun getProgressBar(
@@ -10,7 +8,6 @@ object ProgressBarUtil {
         val percent = current.toFloat() / max
         val progressBars = (totalBars * percent).toInt()
 
-        return (Strings.repeat("" + completedColor + symbol, progressBars)
-                + Strings.repeat("" + notCompletedColor + symbol, totalBars - progressBars))
+        return "${"$completedColor$symbol".repeat(progressBars)}${"$notCompletedColor$symbol".repeat(totalBars - progressBars)}"
     }
 }
