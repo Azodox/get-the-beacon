@@ -23,19 +23,9 @@ class SlimeTakesDamageListener(private val game: Game) : Listener {
         if (beacon.slime.uniqueId != slime.uniqueId)
             return
 
-        if (event.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+        if (event.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK || event.damager !is Player || beacon.state == GameBeaconState.PROTECTED) {
             event.isCancelled = true
-            return
-        }
-
-        if (event.damager !is Player) {
-            event.isCancelled = true
-            return
-        }
-
-        if (beacon.state == GameBeaconState.PROTECTED) {
-            event.isCancelled = true
-            return
+            return;
         }
 
         beacon.health = slime.health
@@ -46,7 +36,7 @@ class SlimeTakesDamageListener(private val game: Game) : Listener {
     }
 
     @EventHandler
-    fun onSlimeTakesDamage(event: EntityDamageEvent){
+    fun onSlimeTakesDamage(event: EntityDamageEvent) {
         if (event.entityType != EntityType.SLIME) return
         event.isCancelled = (event.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK)
     }

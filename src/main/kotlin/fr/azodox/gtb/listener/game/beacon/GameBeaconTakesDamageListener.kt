@@ -39,10 +39,8 @@ class GameBeaconTakesDamageListener : Listener {
             event.isCancelled = true
             beacon.health = beacon.defaultHealth * 0.1 // Prevents the beacon from being destroyed
             beacon.slime.health = beacon.health
-            if (beacon.state == GameBeaconState.BASE) {
-                beacon.returnToDefaultLocation()
-            } else
-                beacon.triggerProtection()
+
+            (beacon.takeIf { it.state == GameBeaconState.BASE }?.returnToDefaultLocation() ?: beacon.triggerProtection())
         }
 
     }
