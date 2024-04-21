@@ -67,18 +67,16 @@ data class GameTeam(
 
         other as GameTeam
 
-        if (game != other.game) return false
-        if (name != other.name) return false
-        if (displayName != other.displayName) return false
-        if (bukkitTeam != other.bukkitTeam) return false
-        if (players != other.players) return false
-        if (beaconDeposit != other.beaconDeposit) return false
-        if (icon != other.icon) return false
-        if (size != other.size) return false
-        if (spawn != other.spawn) return false
-        if (color != other.color) return false
-
-        return true
+        return game == other.game &&
+                name == other.name &&
+                displayName == other.displayName &&
+                bukkitTeam == other.bukkitTeam &&
+                players == other.players &&
+                beaconDeposit == other.beaconDeposit &&
+                icon == other.icon &&
+                size == other.size &&
+                spawn == other.spawn &&
+                color == other.color
     }
 
     override fun hashCode(): Int {

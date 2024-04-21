@@ -188,7 +188,7 @@ class GameBeacon(
             if (basePlacementCounter >= game.plugin.config.getInt(GAME_BEACON_MAX_BASE_PLACEMENTS_KEY)) {
                 this.locked = true
                 blockLocation.world.getBlockAt(blockLocation).type = Material.BEACON
-            }else
+            } else
                 this.spawn(blockLocation)
             blockLocation.world.time = DAY_TIME
             state = GameBeaconState.BASE
