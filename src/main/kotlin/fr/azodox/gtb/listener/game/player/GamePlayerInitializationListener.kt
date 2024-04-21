@@ -28,6 +28,8 @@ class GamePlayerInitializationListener(private val plugin: Plugin) : Listener {
             )
         }
 
+        player.inventory.clear()
+
         player.inventory.setItem(
             0,
             ItemBuilder(Material.WHITE_BANNER, 1)

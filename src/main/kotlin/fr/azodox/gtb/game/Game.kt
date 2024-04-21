@@ -8,6 +8,7 @@ import fr.azodox.gtb.event.game.player.GamePlayerRemovedEvent
 import fr.azodox.gtb.game.team.GameTeam
 import fr.azodox.gtb.game.team.view.GameTeamChoiceView
 import fr.azodox.gtb.lang.language
+import fr.azodox.gtb.util.LocationSerialization
 import fr.mrmicky.fastboard.adventure.FastBoard
 import me.devnatan.inventoryframework.ViewFrame
 import net.kyori.adventure.text.Component
@@ -17,7 +18,16 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 import java.util.*
 
+private const val GAME_BEACON_LOCATION_CONFIG_KEY = "game.beacon.spawn"
 
+private const val GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY = "game.beacon.default-health"
+
+class Game(
+    val plugin: GetTheBeacon,
+    val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
+    val name: String = "GetTheBeacon $id",
+
+  
 data class Game(
     val plugin: GetTheBeacon,
     val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
@@ -26,8 +36,13 @@ data class Game(
     val gamePlayers: MutableList<UUID> = mutableListOf(),
     val playerBoards: MutableMap<UUID, FastBoard> = mutableMapOf(),
     var minPlayers: Int = 2,
-    private val teams: MutableList<GameTeam> = mutableListOf()
 ) {
+
+    init {
+        Bukkit.getWorlds().forEach {
+            it.time = 18000
+        }
+    }
 
     var currentPhase: Int = 0
         set(value) {
@@ -43,8 +58,19 @@ data class Game(
             Bukkit.getPluginManager().callEvent(GameStateChangeEvent(this, previous, value))
         }
 
+    private val waitingPlayers: MutableList<UUID> = mutableListOf()
+    private val gamePlayers: MutableList<UUID> = mutableListOf()
+    private val teams: MutableList<GameTeam> = mutableListOf()
+
     private var countDownTask: BukkitTask? = null
     private var currentTeamThreshold = 1
+
+    var beacon: GameBeacon = GameBeacon(
+        this,
+        LocationSerialization.deserialize(plugin.config.getString(GAME_BEACON_LOCATION_CONFIG_KEY)!!),
+        GameBeaconState.CENTER,
+        plugin.config.getDouble(GAME_BEACON_DEFAULT_HEALTH_CONFIG_KEY)
+    )
 
     fun start() {
         countDownTask?.cancel()
@@ -55,20 +81,24 @@ data class Game(
         state = GameState.STARTING
         var time = plugin.config.getInt("game.starting-time")
         countDownTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
+            if (teams.sumOf { it.players.size } < minPlayers) {
             if (teams.map { it.players.size }.size < 2) {
                 state = GameState.WAITING
                 waitingPlayers.forEach {
-                    Bukkit.getPlayer(it)?.sendActionBar(language(it).message("start.not-enough-players").color(NamedTextColor.RED))
+                    Bukkit.getPlayer(it)?.sendMessage(language(it).message("start.not-enough-players").color(NamedTextColor.RED))
                 }
 
                 Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
             }
 
             if (time == 0) {
+                gamePlayers.addAll(teams.map { it.players }.flatten())
                 currentPhase = 1
                 gamePlayers.addAll(waitingPlayers)
                 state = GameState.IN_GAME
                 Bukkit.getScheduler().cancelTask(countDownTask!!.taskId)
+                beacon.spawnAtDefaultLocation()
+                state = GameState.IN_GAME
                 return@Runnable
             }
 
@@ -102,8 +132,16 @@ data class Game(
         return waitingPlayers.map { Bukkit.getPlayer(it)!! }.toList()
     }
 
+    fun getOnlinePlayers(): List<Player> {
+        return gamePlayers.mapNotNull { Bukkit.getPlayer(it) }.filter { it.isOnline }.toList()
+    }
+
     fun getPlayerTeam(player: Player): GameTeam? {
-        return teams.find { it.players.contains(player.uniqueId) }
+        return getPlayerTeam(player.uniqueId)
+    }
+
+    fun getPlayerTeam(uuid: UUID): GameTeam? {
+        return teams.find { it.players.contains(uuid) }
     }
 
     fun getTeams(): List<GameTeam> {

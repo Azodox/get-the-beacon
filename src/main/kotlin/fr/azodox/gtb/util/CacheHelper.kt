@@ -18,4 +18,16 @@ object CacheHelper {
     fun <T : Any> put(key: String, value: T) {
         cache[key] = value
     }
+
+    fun <T : Any> compare(key: String, value: T): Boolean {
+        return cache[key] == value
+    }
+
+    fun remove(key: String) {
+        cache.remove(key)
+    }
+
+    fun <T: Any> remove(key: String, value: T) {
+        cache.remove(key, value)
+    }
 }

@@ -19,6 +19,9 @@
     "game.scoreboard.next-event": "Prochain évènement: <yellow>%s</yellow>",
     "language.command.set": "La langue a été définie sur <yellow>%s</yellow>.",
     "language.command.help": "Liste des langues disponibles : <yellow>%s</yellow>.",
-    "language.command.reload": "Les langues ont été rechargées."
+    "language.command.reload": "Les langues ont été rechargées.",
+    "game.beacon.protection.enabled": "<bold><red>BEACON <dark_gray><obf>:</obf></dark_gray> DEFENSE ACTIVEE</red></bold>",
+    "game.beacon.deposit-checker.countdown": "Le beacon sera déposé dans <yellow>%ss</yellow>.",
+    "game.beacon.deposited.broadcast": "%player% (%team%) a déposé le beacon !"
   }
 }
