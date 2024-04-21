@@ -11,8 +11,8 @@ object CacheHelper {
         return cache.getOrPut(key, supplier) as T
     }
 
-    fun <T : Any> get(key: String): T {
-        return cache[key] as T
+    fun <T : Any> get(key: String): T? {
+        return cache[key] as T?
     }
 
     fun <T : Any> put(key: String, value: T) {

@@ -26,15 +26,6 @@ class Game(
     val plugin: GetTheBeacon,
     val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
     val name: String = "GetTheBeacon $id",
-
-  
-data class Game(
-    val plugin: GetTheBeacon,
-    val id: String = UUID.randomUUID().toString().replace("-", "").substring(5, 10),
-    val name: String = "GetTheBeacon $id",
-    private val waitingPlayers: MutableList<UUID> = mutableListOf(),
-    val gamePlayers: MutableList<UUID> = mutableListOf(),
-    val playerBoards: MutableMap<UUID, FastBoard> = mutableMapOf(),
     var minPlayers: Int = 2,
 ) {
 
@@ -58,8 +49,9 @@ data class Game(
             Bukkit.getPluginManager().callEvent(GameStateChangeEvent(this, previous, value))
         }
 
+    val playerBoards: MutableMap<UUID, FastBoard> = mutableMapOf()
     private val waitingPlayers: MutableList<UUID> = mutableListOf()
-    private val gamePlayers: MutableList<UUID> = mutableListOf()
+    val gamePlayers: MutableList<UUID> = mutableListOf()
     private val teams: MutableList<GameTeam> = mutableListOf()
 
     private var countDownTask: BukkitTask? = null
@@ -82,7 +74,6 @@ data class Game(
         var time = plugin.config.getInt("game.starting-time")
         countDownTask = Bukkit.getScheduler().runTaskTimer(plugin, Runnable {
             if (teams.sumOf { it.players.size } < minPlayers) {
-            if (teams.map { it.players.size }.size < 2) {
                 state = GameState.WAITING
                 waitingPlayers.forEach {
                     Bukkit.getPlayer(it)?.sendMessage(language(it).message("start.not-enough-players").color(NamedTextColor.RED))
