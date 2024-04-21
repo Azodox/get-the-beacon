@@ -5,6 +5,9 @@ import org.bukkit.Location;
 
 public class LocationSerialization {
 
+    private LocationSerialization() {
+    }
+
     // Convert string to location.
     public static Location deserialize(String str){
         String[] str2loc = str.split(":");

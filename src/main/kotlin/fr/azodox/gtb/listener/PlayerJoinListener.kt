@@ -20,8 +20,10 @@ class PlayerJoinListener(private val gtb: GetTheBeacon) : Listener {
                 game.initPlayer(player.uniqueId)
                 event.joinMessage(Component.empty())
             }
-
-            else -> {}
+            else -> {
+                game.registerPlayerBoard(player)
+                event.joinMessage(Component.empty())
+            }
         }
     }
 }

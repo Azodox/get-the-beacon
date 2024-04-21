@@ -19,3 +19,22 @@ game:
         - 'world:24.5:-59:-7.5:0:0'
         - 'world:24.5:-59:24.5:0:0'
     max-base-placements: 2
+  scoreboard:
+    phase-1:
+      title: "game.scoreboard.title"
+      lines:
+        - "game.scoreboard.remaining-time"
+        - ""
+        - "game.scoreboard.current-objective"
+        - ""
+        - "game.scoreboard.role"
+        - "game.scoreboard.next-event"
+    phase-2:
+      title: "game.scoreboard.title"
+      lines:
+        - "game.scoreboard.remaining-time"
+        - ""
+        - "game.scoreboard.current-objective"
+        - ""
+        - "game.scoreboard.role"
+        - "game.scoreboard.next-event"

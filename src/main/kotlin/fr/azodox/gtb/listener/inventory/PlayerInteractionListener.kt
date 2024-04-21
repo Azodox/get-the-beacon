@@ -23,7 +23,9 @@ class PlayerInteractionListener(private val game: Game, private val javaPlugin: 
                     if (item.itemMeta.persistentDataContainer.has(NamespacedKey(javaPlugin, "teamselectobject"), PersistentDataType.STRING))
                         game.switchToRandomTeam(player)
                 }
-                else -> {}
+
+                GameState.IN_GAME -> TODO()
+                GameState.ENDING -> TODO()
             }
         }
     }

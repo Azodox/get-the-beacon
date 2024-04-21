@@ -25,6 +25,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
     implementation 'me.devnatan:inventory-framework-platform-bukkit:3.1.0-rc'
     implementation "co.aikar:acf-paper:0.5.1-SNAPSHOT"
+    implementation 'fr.mrmicky:fastboard:2.0.2'
 }
 
 build {
@@ -39,6 +40,7 @@ shadowJar {
     relocate 'co.aikar.commands', 'fr.azodox.lib.acf'
     relocate 'co.aikar.locales', 'fr.azodox.lib.acf.locales'
     relocate 'kotlin', 'fr.azodox.lib.kotlin'
+    relocate 'fr.mrmicky.fastboard', 'fr.azodox.lib.fastboard'
     archiveClassifier.set('')
 }
 

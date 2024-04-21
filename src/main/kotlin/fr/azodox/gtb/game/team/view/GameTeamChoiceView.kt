@@ -10,6 +10,9 @@ import me.devnatan.inventoryframework.context.Context
 import me.devnatan.inventoryframework.state.State
 import net.kyori.adventure.text.minimessage.MiniMessage
 
+private const val TEAM = "%team%"
+private const val SIZE = "%size%"
+
 class GameTeamChoiceView(private val teams: List<GameTeam>) : View() {
 
     private lateinit var paginationState: State<Pagination>
@@ -28,8 +31,8 @@ class GameTeamChoiceView(private val teams: List<GameTeam>) : View() {
                     language(ctx.player)
                         .message("lobby.team.choice.lore.already-in")
                         .replaceText {
-                            it.match("%team%").replacement(team.name)
-                            it.match("%size%").replacement(team.size.toString())
+                            it.match(TEAM).replacement(team.name)
+                            it.match(SIZE).replacement(team.size.toString())
                         }
                 )
             } else {
@@ -37,8 +40,8 @@ class GameTeamChoiceView(private val teams: List<GameTeam>) : View() {
                     language(ctx.player)
                         .message("lobby.team.choice.lore.not-joined")
                         .replaceText {
-                            it.match("%team%").replacement(team.name)
-                            it.match("%size%").replacement(team.size.toString())
+                            it.match(TEAM).replacement(team.name)
+                            it.match(SIZE).replacement(team.size.toString())
                         }
                 )
             }
@@ -54,7 +57,7 @@ class GameTeamChoiceView(private val teams: List<GameTeam>) : View() {
                         language(player)
                             .message("lobby.team.choice.joined")
                             .replaceText {
-                                it.match("%team%").replacement(team.name)
+                                it.match(TEAM).replacement(team.name)
                             }
                     )
                 } else {
@@ -64,7 +67,7 @@ class GameTeamChoiceView(private val teams: List<GameTeam>) : View() {
                         language(player)
                             .message("lobby.team.choice.left")
                             .replaceText {
-                                it.match("%team%").replacement(team.name)
+                                it.match(TEAM).replacement(team.name)
                             }
                     )
                 }
